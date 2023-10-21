@@ -1,0 +1,9 @@
+custom metadata
+ReadModels/Projections - maybe?
+Snapshots
+duplicate command detection - is it needed here?
+Event naming
+Event versioning
+Event upcasting
+Arch tests: almost no class should be used in tests, only interfaces
+IAggregate -> AgregateFunctionality/AggregatePart (?)
