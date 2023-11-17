@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yaevh.EventSourcing.Core
+namespace Yaevh.EventSourcing
 {
     public interface IEvent { }
 }

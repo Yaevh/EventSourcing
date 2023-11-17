@@ -8,7 +8,7 @@ namespace Yaevh.EventSourcing.Core
 {
     public class UnknownEventException : ApplicationException
     {
-        public UnknownEventException(Type eventType) : base($"Unknown event: {eventType.FullName}")
+        public UnknownEventException(Type eventType) : base($"Unknown event: {eventType.AssemblyQualifiedName}")
         {
         }
     }
