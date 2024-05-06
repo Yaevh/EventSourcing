@@ -4,8 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yaevh.EventSourcing.Core
+namespace Yaevh.EventSourcing
 {
+    /// <summary>
+    /// Loads and saves the aggregates of a certain type.
+    /// </summary>
+    /// <typeparam name="TAggregate"></typeparam>
+    /// <typeparam name="TAggregateId"></typeparam>
     public interface IAggregateManager<TAggregate, TAggregateId>
         where TAggregate: IAggregate<TAggregateId>
     {

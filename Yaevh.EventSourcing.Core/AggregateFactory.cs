@@ -7,28 +7,25 @@ using System.Threading.Tasks;
 
 namespace Yaevh.EventSourcing.Core
 {
-    public interface IAggregateFactory
-    {
-        TAggregate Create<TAggregate, TAggregateId>(TAggregateId aggregateId);
-    }
-
+    /// <summary>
+    /// Creates new instances of aggregates by invoking the constructor taking a single AggregateId as a parameter
+    /// </summary>
     public class DefaultAggregateFactory : IAggregateFactory
     {
-
         public TAggregate Create<TAggregate, TAggregateId>(TAggregateId aggregateId)
         {
             var constructors = typeof(TAggregate).GetConstructors()
                 .Where(FilterConstructor<TAggregateId>)
                 .ToList();
             if (constructors.Count != 1)
-                throw new ArgumentException($"{typeof(TAggregate).Name} should contain exactly one constructor with {typeof(TAggregateId).Name} as a single parameter");
+                throw new ArgumentException($"The aggregate \"{typeof(TAggregate).Name}\" should contain exactly one constructor with {typeof(TAggregateId).Name} as a single parameter");
 
             var constructor = constructors[0];
 
             return (TAggregate)constructor.Invoke(new object[] { aggregateId });
         }
 
-        private bool FilterConstructor<TAggregateId>(ConstructorInfo constructor)
+        private static bool FilterConstructor<TAggregateId>(ConstructorInfo constructor)
         {
             if (constructor.IsPublic == false)
                 return false;

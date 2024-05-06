@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing
 {
     /// <summary>
-    /// A persistent store responsible for storing and retrieving events.
-    /// May be implemented by a database or something similar.
+    /// A persistent store responsible for storing and retrieving the aggregate events.
     /// </summary>
     public interface IAggregateStore
     {
