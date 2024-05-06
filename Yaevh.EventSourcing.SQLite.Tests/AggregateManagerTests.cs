@@ -16,7 +16,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
         private class FakePublisher : IPublisher
         {
-            public Task Publish<TEvent>(TEvent @event, CancellationToken cancellationToken) => Task.CompletedTask;
+            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
         private class NullLogger<TCategory> : Microsoft.Extensions.Logging.ILogger<TCategory>

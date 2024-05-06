@@ -8,6 +8,6 @@ namespace Yaevh.EventSourcing.Core
 {
     public interface IPublisher
     {
-        Task Publish<TEvent>(TEvent @event, CancellationToken cancellationToken);
+        Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken);
     }
 }
