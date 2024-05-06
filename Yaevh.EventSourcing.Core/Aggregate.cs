@@ -16,7 +16,7 @@ namespace Yaevh.EventSourcing.Core
         public long Version { get; private set; } = 0;
 
 
-        private List<DomainEvent<Guid>> _uncommittedEvents = new List<DomainEvent<Guid>>();
+        private readonly List<DomainEvent<Guid>> _uncommittedEvents = new List<DomainEvent<Guid>>();
         public IReadOnlyList<DomainEvent<Guid>> UncommittedEvents => _uncommittedEvents.AsReadOnly();
 
         protected Aggregate(Guid aggregateId)

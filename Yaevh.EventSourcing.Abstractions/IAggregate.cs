@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Yaevh.EventSourcing
 {
+    /// <summary>
+    /// The base entity; all aggregates should implement this
+    /// </summary>
+    /// <typeparam name="TAggregateId"></typeparam>
     public interface IAggregate<TAggregateId>
     {
         TAggregateId AggregateId { get; }
