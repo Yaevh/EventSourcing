@@ -14,22 +14,25 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 [typeof(Guid)] = new GuidAggregateIdSerializer()
             };
 
+        #region support classes
         private class FakePublisher : IPublisher
         {
             public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
-        private class NullLogger<TCategory> : Microsoft.Extensions.Logging.ILogger<TCategory>
+        private class NullLogger<TCategory> : ILogger<TCategory>
         {
             public IDisposable? BeginScope<TState>(TState state) where TState : notnull => throw new NotImplementedException();
             public bool IsEnabled(LogLevel logLevel) => false;
             public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => throw new NotImplementedException();
         }
+        #endregion
 
 
         [Fact(DisplayName = "Loaded aggregate should match the stored one")]
         public async Task LoadedAggregateShouldMatchStoredOne()
         {
+            // Arrange
             var connection = new NonClosingSqliteConnection("DataSource=:memory:");
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
@@ -51,20 +54,14 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
             await aggregateManager.CommitAsync(aggregate, CancellationToken.None);
 
+            // Act
             var restoredAggregate = await aggregateManager.LoadAsync(aggregate.AggregateId, CancellationToken.None);
 
-
+            // Assert
             restoredAggregate.AggregateId.Should().Be(aggregate.AggregateId);
             restoredAggregate.Version.Should().Be(aggregate.Version);
             restoredAggregate.CurrentValue.Should().Be(aggregate.CurrentValue);
             restoredAggregate.UncommittedEvents.Should().BeEmpty();
-        }
-
-
-        private class NonClosingSqliteConnection : Microsoft.Data.Sqlite.SqliteConnection
-        {
-            public NonClosingSqliteConnection(string connectionString) : base(connectionString) { }
-            public override void Close() { }
         }
     }
 }

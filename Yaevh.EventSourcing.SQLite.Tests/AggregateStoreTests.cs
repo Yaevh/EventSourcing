@@ -16,18 +16,21 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         [Fact(DisplayName = "A01. Database is sane: can be created and queried")]
         public async Task DatabaseCanBeCreatedAndQueried()
         {
+            // Arrange
             var connection = new NonClosingSqliteConnection("DataSource=:memory:");
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
 
             var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
 
+            // Act & Assert - should not throw
             var events = await aggregateStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
         }
 
         [Fact(DisplayName = "A02. Data can be stored")]
         public async Task StoringTest()
         {
+            // Arrange
             var connection = new NonClosingSqliteConnection("DataSource=:memory:");
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
@@ -43,8 +46,10 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
             var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
 
+            // Act
             await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
+            // Assert
             const string sql = @"
                 SELECT
                     DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Data
@@ -90,6 +95,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         [Fact(DisplayName = "A03. Loaded events should match stored ones")]
         public async Task LoadedEventsShouldMatchStoredOnes()
         {
+            // Arrange
             var connection = new NonClosingSqliteConnection("DataSource=:memory:");
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
@@ -106,8 +112,10 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
             await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
+            // Act
             var events = await aggregateStore.LoadAsync(aggregate.AggregateId, CancellationToken.None);
 
+            // Assert
             events.Should().SatisfyRespectively(
                 jeden => {
                     jeden.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
@@ -139,13 +147,6 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     trzy.Metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                     trzy.Metadata.EventIndex.Should().Be(3);
                 });
-        }
-
-
-        private class NonClosingSqliteConnection : Microsoft.Data.Sqlite.SqliteConnection
-        {
-            public NonClosingSqliteConnection(string connectionString) : base(connectionString) { }
-            public override void Close() { }
         }
     }
 }
