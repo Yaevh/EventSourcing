@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -9,7 +10,7 @@ namespace Yaevh.EventSourcing.Core.Tests
     {
         private class FakeAggregateStore : IAggregateStore
         {
-            private readonly Dictionary<object, IReadOnlyList<object>> _eventStorage = new Dictionary<object, IReadOnlyList<object>>();
+            private readonly Dictionary<object, IReadOnlyList<object>> _eventStorage = new();
 
             public Task<IEnumerable<DomainEvent<TAggregateId>>> LoadAsync<TAggregateId>(TAggregateId aggregateId, CancellationToken cancellationToken)
             {
@@ -26,17 +27,14 @@ namespace Yaevh.EventSourcing.Core.Tests
             }
         }
 
+
+        #region support classes
         private class FakePublisher : IPublisher
         {
-            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken) => Task.CompletedTask;
+            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken)
+                => Task.CompletedTask;
         }
-
-        private class NullLogger<TCategory> : ILogger<TCategory>
-        {
-            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => throw new NotImplementedException();
-            public bool IsEnabled(LogLevel logLevel) => false;
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => throw new NotImplementedException();
-        }
+        #endregion
 
 
         [Fact(DisplayName = "Loaded aggregate should match the stored one")]

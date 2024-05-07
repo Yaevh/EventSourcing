@@ -1,6 +1,5 @@
-using Dapper;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Collections.Generic;
 using System.Threading;
 using Yaevh.EventSourcing.Core;
@@ -14,17 +13,12 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 [typeof(Guid)] = new GuidAggregateIdSerializer()
             };
 
+
         #region support classes
         private class FakePublisher : IPublisher
         {
-            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken) => Task.CompletedTask;
-        }
-
-        private class NullLogger<TCategory> : ILogger<TCategory>
-        {
-            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => throw new NotImplementedException();
-            public bool IsEnabled(LogLevel logLevel) => false;
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => throw new NotImplementedException();
+            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken)
+                => Task.CompletedTask;
         }
         #endregion
 

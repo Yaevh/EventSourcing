@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,13 @@ namespace Yaevh.EventSourcing.Core
         private readonly IAggregateStore _store;
         private readonly IAggregateFactory _aggregateFactory;
         private readonly IPublisher _publisher;
-        private readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly ILogger _logger;
 
         public AggregateManager(
             IAggregateStore store,
             IAggregateFactory aggregateFactory,
             IPublisher publisher,
-            Microsoft.Extensions.Logging.ILogger<AggregateManager<TAggregate, TAggregateId>> logger)
+            ILogger<AggregateManager<TAggregate, TAggregateId>> logger)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _aggregateFactory = aggregateFactory ?? throw new ArgumentNullException(nameof(aggregateFactory));
@@ -29,9 +30,12 @@ namespace Yaevh.EventSourcing.Core
 
         public async Task<TAggregate> LoadAsync(TAggregateId aggregateId, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("Trying to load aggregate with AggregateId = {aggregateId}", aggregateId);
             var aggregate = _aggregateFactory.Create<TAggregate, TAggregateId>(aggregateId);
             var events = await _store.LoadAsync(aggregateId, cancellationToken);
+            _logger.LogDebug("Found {eventCount} events for aggregate {aggregateType} with ID {aggregateId}, now loading", events.Count(), aggregate.GetType().FullName, aggregateId);
             aggregate.Load(events);
+            _logger.LogDebug("Loaded {eventCount} events for aggregate {aggregateType} with ID {aggregateId}", events.Count(), aggregate.GetType().FullName, aggregateId);
             return aggregate;
         }
 

@@ -19,7 +19,8 @@ namespace Yaevh.EventSourcing
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<IEnumerable<DomainEvent<TAggregateId>>>
-            LoadAsync<TAggregateId>(TAggregateId aggregateId, CancellationToken cancellationToken);
+            LoadAsync<TAggregateId>(TAggregateId aggregateId, CancellationToken cancellationToken)
+            where TAggregateId : notnull;
 
         /// <summary>
         /// Save the aggregate and its events to a persistent storage.
@@ -32,6 +33,6 @@ namespace Yaevh.EventSourcing
         /// <returns></returns>
         Task StoreAsync<TAggregate, TAggregateId>(
             TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
-            where TAggregate : IAggregate<TAggregateId>;
+            where TAggregate : notnull, IAggregate<TAggregateId>;
     }
 }
