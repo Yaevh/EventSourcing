@@ -22,9 +22,11 @@ namespace Yaevh.EventSourcing.SQLite
             _aggregateIdSerializers = aggregateIdSerializers ?? throw new ArgumentNullException(nameof(aggregateIdSerializers));
         }
 
-        public async Task<IEnumerable<DomainEvent<TAggregateId>>> LoadAsync<TAggregateId>(TAggregateId aggregateId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DomainEvent<TAggregateId>>> LoadAsync<TAggregateId>(
+            TAggregateId aggregateId, CancellationToken cancellationToken)
+            where TAggregateId : notnull
         {
-            Guard.Against.Null(aggregateId, nameof(aggregateId));
+            Guard.Against.Null(aggregateId);
 
             await EnsureDatabase(cancellationToken);
 
@@ -47,8 +49,10 @@ namespace Yaevh.EventSourcing.SQLite
             }
         }
 
-        public async Task StoreAsync<TAggregate, TAggregateId>(TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
-            where TAggregate : IAggregate<TAggregateId>
+        public async Task StoreAsync<TAggregate, TAggregateId>(
+            TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
+            where TAggregate : notnull, IAggregate<TAggregateId>
+            where TAggregateId : notnull
         {
             Guard.Against.Null(aggregate);
             Guard.Against.Null(events);
@@ -109,7 +113,7 @@ namespace Yaevh.EventSourcing.SQLite
             var aggregateIdSerializer = (IAggregateIdSerializer<TAggregateId>)_aggregateIdSerializers[typeof(TAggregateId)];
 
             var metadata = new DefaultEventMetadata<TAggregateId>(
-                DateTimeOffset.Parse(source.DateTime),
+                DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture),
                 Guid.Parse(source.EventId),
                 source.EventName,
                 aggregateIdSerializer.Deserialize(source.AggregateId),

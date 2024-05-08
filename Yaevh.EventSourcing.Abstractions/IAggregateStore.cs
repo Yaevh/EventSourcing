@@ -33,6 +33,7 @@ namespace Yaevh.EventSourcing
         /// <returns></returns>
         Task StoreAsync<TAggregate, TAggregateId>(
             TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
-            where TAggregate : notnull, IAggregate<TAggregateId>;
+            where TAggregate : notnull, IAggregate<TAggregateId>
+            where TAggregateId : notnull;
     }
 }

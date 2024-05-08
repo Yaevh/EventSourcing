@@ -11,6 +11,7 @@ namespace Yaevh.EventSourcing
     /// </summary>
     /// <typeparam name="TAggregateId"></typeparam>
     public interface IAggregate<TAggregateId>
+        where TAggregateId : notnull
     {
         TAggregateId AggregateId { get; }
 
