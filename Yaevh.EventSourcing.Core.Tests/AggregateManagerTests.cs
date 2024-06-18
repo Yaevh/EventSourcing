@@ -27,6 +27,7 @@ namespace Yaevh.EventSourcing.Core.Tests
 
             public Task StoreAsync<TAggregate, TAggregateId>(TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
                 where TAggregate : IAggregate<TAggregateId>
+                where TAggregateId : notnull
             {
                 var key = aggregate.AggregateId;
                 _eventStorage[key] = events;

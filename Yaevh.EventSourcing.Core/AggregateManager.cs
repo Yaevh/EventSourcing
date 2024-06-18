@@ -10,6 +10,7 @@ namespace Yaevh.EventSourcing.Core
     public class AggregateManager<TAggregate, TAggregateId>
         : IAggregateManager<TAggregate, TAggregateId>
         where TAggregate : IAggregate<TAggregateId>
+        where TAggregateId : notnull
     {
         private readonly IAggregateStore _store;
         private readonly IAggregateFactory _aggregateFactory;
@@ -30,12 +31,12 @@ namespace Yaevh.EventSourcing.Core
 
         public async Task<TAggregate> LoadAsync(TAggregateId aggregateId, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("Trying to load aggregate with AggregateId = {aggregateId}", aggregateId);
+            _logger.LogDebug("Trying to load aggregate with AggregateId = {AggregateId}", aggregateId);
             var aggregate = _aggregateFactory.Create<TAggregate, TAggregateId>(aggregateId);
             var events = await _store.LoadAsync(aggregateId, cancellationToken);
-            _logger.LogDebug("Found {eventCount} events for aggregate {aggregateType} with ID {aggregateId}, now loading", events.Count(), aggregate.GetType().FullName, aggregateId);
+            _logger.LogDebug("Found {EventCount} events for aggregate {AggregateType} with ID {AggregateId}, now loading", events.Count(), aggregate.GetType().FullName, aggregateId);
             aggregate.Load(events);
-            _logger.LogDebug("Loaded {eventCount} events for aggregate {aggregateType} with ID {aggregateId}", events.Count(), aggregate.GetType().FullName, aggregateId);
+            _logger.LogDebug("Loaded {EventCount} events for aggregate {AggregateType} with ID {AggregateId}", events.Count(), aggregate.GetType().FullName, aggregateId);
             return aggregate;
         }
 

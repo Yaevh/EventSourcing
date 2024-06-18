@@ -60,12 +60,12 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     EventIndex ASC";
             var parameters = new { AggregateId = aggregateIdSerializer.Serialize(aggregate.AggregateId) };
             var command = new CommandDefinition(sql, parameters: parameters);
-            var results = await connection.QueryAsync<AggregateStore.EventData<Guid>>(command);
+            var results = await connection.QueryAsync<AggregateStore.EventData>(command);
 
             results.Should().SatisfyRespectively(
                 jeden => {
                     jeden.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
-                    DateTimeOffset.Parse(jeden.DateTime).Should().Be(now1);
+                    DateTimeOffset.Parse(jeden.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now1);
                     jeden.EventId.Should().NotBeEmpty();
                     jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     jeden.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
@@ -74,7 +74,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 },
                 dwa => {
                     dwa.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
-                    DateTimeOffset.Parse(dwa.DateTime).Should().Be(now2);
+                    DateTimeOffset.Parse(dwa.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now2);
                     dwa.EventId.Should().NotBeEmpty();
                     dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     dwa.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
@@ -83,7 +83,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 },
                 trzy => {
                     trzy.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
-                    DateTimeOffset.Parse(trzy.DateTime).Should().Be(now3);
+                    DateTimeOffset.Parse(trzy.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now3);
                     trzy.EventId.Should().NotBeEmpty();
                     trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     trzy.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));

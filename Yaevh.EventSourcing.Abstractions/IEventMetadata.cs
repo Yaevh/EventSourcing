@@ -10,7 +10,7 @@ namespace Yaevh.EventSourcing
     /// Represents metadata about a certain event.
     /// </summary>
     /// <typeparam name="TAggregateId"></typeparam>
-    public interface IEventMetadata<TAggregateId>
+    public interface IEventMetadata<out TAggregateId>
     {
         /// <summary>
         /// The date and time the event was raised.

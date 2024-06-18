@@ -11,6 +11,8 @@ namespace Yaevh.EventSourcing
     /// </summary>
     public interface IAggregateFactory
     {
-        TAggregate Create<TAggregate, TAggregateId>(TAggregateId aggregateId);
+        TAggregate Create<TAggregate, TAggregateId>(TAggregateId aggregateId)
+            where TAggregate : IAggregate<TAggregateId>
+            where TAggregateId : notnull;
     }
 }

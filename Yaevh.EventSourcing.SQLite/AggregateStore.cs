@@ -44,7 +44,7 @@ namespace Yaevh.EventSourcing.SQLite
                         EventIndex ASC";
                 var parameters = new { AggregateId = aggregateIdSerializer.Serialize(aggregateId) };
                 var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
-                var results = await connection.QueryAsync<EventData<TAggregateId>>(command);
+                var results = await connection.QueryAsync<EventData>(command);
                 return results.Select(x => ParseToDomainEvent<TAggregateId>(x));
             }
         }
@@ -108,7 +108,8 @@ namespace Yaevh.EventSourcing.SQLite
             }
         }
 
-        private DomainEvent<TAggregateId> ParseToDomainEvent<TAggregateId>(EventData<TAggregateId> source)
+        private DomainEvent<TAggregateId> ParseToDomainEvent<TAggregateId>(EventData source)
+            where TAggregateId : notnull
         {
             var aggregateIdSerializer = (IAggregateIdSerializer<TAggregateId>)_aggregateIdSerializers[typeof(TAggregateId)];
 
@@ -128,7 +129,7 @@ namespace Yaevh.EventSourcing.SQLite
         }
 
 
-        internal record EventData<TAggregateId>(
+        internal record EventData(
             string DateTime,
             string EventId,
             string EventName,

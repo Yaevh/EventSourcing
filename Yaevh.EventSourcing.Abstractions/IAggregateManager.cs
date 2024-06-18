@@ -13,6 +13,7 @@ namespace Yaevh.EventSourcing
     /// <typeparam name="TAggregateId"></typeparam>
     public interface IAggregateManager<TAggregate, TAggregateId>
         where TAggregate: IAggregate<TAggregateId>
+        where TAggregateId : notnull
     {
         /// <summary>
         /// Load the aggregate from an underlying persistent storage

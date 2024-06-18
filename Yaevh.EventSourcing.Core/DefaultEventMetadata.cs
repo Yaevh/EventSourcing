@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing.Core
 {
     public record DefaultEventMetadata<TAggregateId> : IEventMetadata<TAggregateId>
+        where TAggregateId : notnull
     {
         public DateTimeOffset DateTime { get; }
 

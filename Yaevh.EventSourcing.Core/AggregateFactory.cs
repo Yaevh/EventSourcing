@@ -13,6 +13,8 @@ namespace Yaevh.EventSourcing.Core
     public class DefaultAggregateFactory : IAggregateFactory
     {
         public TAggregate Create<TAggregate, TAggregateId>(TAggregateId aggregateId)
+            where TAggregate : IAggregate<TAggregateId>
+            where TAggregateId : notnull
         {
             var constructors = typeof(TAggregate).GetConstructors()
                 .Where(FilterConstructor<TAggregateId>)
