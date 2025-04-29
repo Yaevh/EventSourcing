@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing
 {
     public record DomainEvent<TAggregateId>(
-        IEvent Data,
+        IEventPayload Payload,
         IEventMetadata<TAggregateId> Metadata
     );
 }

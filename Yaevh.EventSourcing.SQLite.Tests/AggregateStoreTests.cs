@@ -17,7 +17,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         public async Task DatabaseCanBeCreatedAndQueried()
         {
             // Arrange
-            var connection = new NonClosingSqliteConnection("DataSource=:memory:");
+            var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
 
@@ -25,13 +25,15 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
             // Act & Assert - should not throw
             var events = await aggregateStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
+
+            events.Should().BeEmpty();
         }
 
         [Fact(DisplayName = "A02. Data can be stored")]
         public async Task StoringTest()
         {
             // Arrange
-            var connection = new NonClosingSqliteConnection("DataSource=:memory:");
+            var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
             var aggregateIdSerializer = new GuidAggregateIdSerializer();
@@ -96,7 +98,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         public async Task LoadedEventsShouldMatchStoredOnes()
         {
             // Arrange
-            var connection = new NonClosingSqliteConnection("DataSource=:memory:");
+            var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
 
@@ -118,7 +120,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             // Assert
             events.Should().SatisfyRespectively(
                 jeden => {
-                    jeden.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                    jeden.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("jeden");
                     jeden.Metadata.DateTime.Should().Be(now1);
                     jeden.Metadata.EventId.Should().NotBeEmpty();
@@ -128,7 +130,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     jeden.Metadata.EventIndex.Should().Be(1);
                 },
                 dwa => {
-                    dwa.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                    dwa.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("dwa");
                     dwa.Metadata.DateTime.Should().Be(now2);
                     dwa.Metadata.EventId.Should().NotBeEmpty();
@@ -138,7 +140,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     dwa.Metadata.EventIndex.Should().Be(2);
                 },
                 trzy => {
-                    trzy.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                    trzy.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("trzy");
                     trzy.Metadata.DateTime.Should().Be(now3);
                     trzy.Metadata.EventId.Should().NotBeEmpty();

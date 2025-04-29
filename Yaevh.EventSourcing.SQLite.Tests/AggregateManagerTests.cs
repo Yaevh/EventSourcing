@@ -27,7 +27,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         public async Task LoadedAggregateShouldMatchStoredOne()
         {
             // Arrange
-            var connection = new NonClosingSqliteConnection("DataSource=:memory:");
+            var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonSerializer();
 

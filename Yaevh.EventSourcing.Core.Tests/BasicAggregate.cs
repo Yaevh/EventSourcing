@@ -22,7 +22,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             RaiseEvent(new BasicEvent(value), now);
         }
 
-        protected override void Apply(IEvent aggregateEvent)
+        protected override void Apply(IEventPayload aggregateEvent)
         {
             switch (aggregateEvent)
             {
@@ -35,6 +35,6 @@ namespace Yaevh.EventSourcing.Core.Tests
         }
 
 
-        internal record BasicEvent(string Value) : IEvent;
+        internal record BasicEvent(string Value) : IEventPayload;
     }
 }

@@ -42,7 +42,7 @@ namespace Yaevh.EventSourcing.Core
         }
 
         public static DefaultEventMetadata<TAggregateId> Create<TAggregate>(
-            TAggregate aggregate, IEvent @event, DateTimeOffset dateTime)
+            TAggregate aggregate, IEventPayload @event, DateTimeOffset dateTime)
             where TAggregate : IAggregate<TAggregateId>
         {
             Guard.Against.Default(aggregate);

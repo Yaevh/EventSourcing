@@ -11,7 +11,7 @@ namespace Yaevh.EventSourcing.SQLite
         private readonly Func<IDbConnection> _dbConnectionFactory;
         private readonly IEventSerializer _eventSerializer;
         private readonly IReadOnlyDictionary<Type, IAggregateIdSerializer> _aggregateIdSerializers;
-        private readonly ConcurrentDictionary<string, Type> _typeCache = new ConcurrentDictionary<string, Type>();
+        private readonly ConcurrentDictionary<string, Type> _typeCache = new();
         public AggregateStore(
             Func<IDbConnection> dbConnectionFactory,
             IEventSerializer eventSerializer,
@@ -80,7 +80,7 @@ namespace Yaevh.EventSourcing.SQLite
                         AggregateId = aggregateIdSerializer.Serialize(@event.Metadata.AggregateId),
                         AggregateName = @event.Metadata.AggregateName,
                         EventIndex = @event.Metadata.EventIndex,
-                        Data = _eventSerializer.Serialize(@event.Data)
+                        Data = _eventSerializer.Serialize(@event.Payload)
                     };
                     var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
                     await connection.ExecuteAsync(command);
@@ -123,7 +123,7 @@ namespace Yaevh.EventSourcing.SQLite
 
             var type = _typeCache.GetOrAdd(metadata.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
 
-            var @event = _eventSerializer.Deserialize(source.Data, type) as IEvent;
+            var @event = _eventSerializer.Deserialize(source.Data, type) as IEventPayload;
 
             return new DomainEvent<TAggregateId>(@event!, metadata);
         }

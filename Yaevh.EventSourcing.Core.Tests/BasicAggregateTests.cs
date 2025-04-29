@@ -106,7 +106,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.UncommittedEvents
                 .Should().SatisfyRespectively(
                     jeden => {
-                        jeden.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                        jeden.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("jeden");
                         jeden.Metadata.DateTime.Should().Be(now1);
                         jeden.Metadata.EventId.Should().NotBeEmpty();
@@ -116,7 +116,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                         jeden.Metadata.EventIndex.Should().Be(1);
                     },
                     dwa => {
-                        dwa.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                        dwa.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("dwa");
                         dwa.Metadata.DateTime.Should().Be(now2);
                         dwa.Metadata.EventId.Should().NotBeEmpty();
@@ -126,7 +126,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                         dwa.Metadata.EventIndex.Should().Be(2);
                     },
                     trzy => {
-                        trzy.Data.Should().BeOfType<BasicAggregate.BasicEvent>()
+                        trzy.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("trzy");
                         trzy.Metadata.DateTime.Should().Be(now3);
                         trzy.Metadata.EventId.Should().NotBeEmpty();

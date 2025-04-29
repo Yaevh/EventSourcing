@@ -123,7 +123,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             publisher.PublishedEvents.Should().SatisfyRespectively(
                 first => {
                     var @event = first.Should().BeOfType<DomainEvent<Guid>>().Subject;
-                    @event.Data.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("one");
+                    @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("one");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now1);
                     metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
@@ -133,7 +133,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                 },
                 second => {
                     var @event = second.Should().BeOfType<DomainEvent<Guid>>().Subject;
-                    @event.Data.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("two");
+                    @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("two");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now2);
                     metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
@@ -143,7 +143,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                 },
                 third => {
                     var @event = third.Should().BeOfType<DomainEvent<Guid>>().Subject;
-                    @event.Data.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("three");
+                    @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("three");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now3);
                     metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);

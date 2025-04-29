@@ -22,7 +22,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             RaiseEvent(new BasicEvent(value), now);
         }
 
-        protected override void Apply(IEvent aggregateEvent)
+        protected override void Apply(IEventPayload aggregateEvent)
         {
             switch (aggregateEvent)
             {
@@ -35,6 +35,6 @@ namespace Yaevh.EventSourcing.SQLite.Tests
         }
 
 
-        public record BasicEvent(string Value) : IEvent;
+        public record BasicEvent(string Value) : IEventPayload;
     }
 }
