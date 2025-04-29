@@ -17,7 +17,7 @@ namespace Yaevh.EventSourcing
 
         /// <summary>
         /// Represents the <see cref="IEventMetadata{TAggregateId}.EventIndex"/>
-        /// of the latest <see cref="DomainEvent{TAggregateId}"/> applied to this Aggregate
+        /// of the latest <see cref="AggregateEvent{TAggregateId}"/> applied to this Aggregate
         /// </summary>
         long Version { get; }
 
@@ -25,7 +25,7 @@ namespace Yaevh.EventSourcing
         /// Restores the state of the aggregate based on given events
         /// </summary>
         /// <param name="events"></param>
-        void Load(IEnumerable<DomainEvent<TAggregateId>> events);
+        void Load(IEnumerable<AggregateEvent<TAggregateId>> events);
 
         /// <summary>
         /// Stores the state of the aggregate in a given <see cref="IAggregateStore"/>
@@ -33,6 +33,6 @@ namespace Yaevh.EventSourcing
         /// <param name="aggregateStore"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IReadOnlyList<DomainEvent<TAggregateId>>> CommitAsync(IAggregateStore aggregateStore, CancellationToken cancellationToken);
+        Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IAggregateStore<TAggregateId> aggregateStore, CancellationToken cancellationToken);
     }
 }

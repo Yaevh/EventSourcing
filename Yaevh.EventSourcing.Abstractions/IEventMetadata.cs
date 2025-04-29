@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Yaevh.EventSourcing
 {
-    /// <summary>
-    /// Represents metadata about a certain event.
-    /// </summary>
-    /// <typeparam name="TAggregateId"></typeparam>
-    public interface IEventMetadata<out TAggregateId>
+    public interface IEventMetadata
     {
         /// <summary>
         /// The date and time the event was raised.
@@ -26,11 +22,6 @@ namespace Yaevh.EventSourcing
         /// The name of the raised event.
         /// </summary>
         string EventName { get; }
-        
-        /// <summary>
-        /// Uniquely identifies the aggregate the event belongs to.
-        /// </summary>
-        TAggregateId AggregateId { get; }
 
         /// <summary>
         /// The name of the aggregate this event belongs to.
@@ -47,5 +38,19 @@ namespace Yaevh.EventSourcing
         /// the second will have an <see cref="EventIndex"/> = 2 and so on.
         /// </remarks>
         long EventIndex { get; }
+    }
+
+
+    /// <summary>
+    /// Represents metadata about a certain event.
+    /// </summary>
+    /// <typeparam name="TAggregateId"></typeparam>
+    public interface IEventMetadata<out TAggregateId> : IEventMetadata
+        where TAggregateId : notnull
+    {
+        /// <summary>
+        /// Uniquely identifies the aggregate the event belongs to.
+        /// </summary>
+        TAggregateId AggregateId { get; }
     }
 }

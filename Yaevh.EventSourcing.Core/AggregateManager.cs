@@ -12,13 +12,13 @@ namespace Yaevh.EventSourcing.Core
         where TAggregate : IAggregate<TAggregateId>
         where TAggregateId : notnull
     {
-        private readonly IAggregateStore _store;
+        private readonly IAggregateStore<TAggregateId> _store;
         private readonly IAggregateFactory _aggregateFactory;
         private readonly IPublisher _publisher;
         private readonly ILogger _logger;
 
         public AggregateManager(
-            IAggregateStore store,
+            IAggregateStore<TAggregateId> store,
             IAggregateFactory aggregateFactory,
             IPublisher publisher,
             ILogger<AggregateManager<TAggregate, TAggregateId>> logger)

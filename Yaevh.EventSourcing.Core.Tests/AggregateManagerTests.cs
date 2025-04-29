@@ -13,21 +13,20 @@ namespace Yaevh.EventSourcing.Core.Tests
         public AggregateManagerTests(ITestOutputHelper testOutputHelper)
             => _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
 
-        #region support classes
-        private class FakeAggregateStore : IAggregateStore
+        #region supporting classes
+        private class FakeAggregateStore<TAggregateId> : IAggregateStore<TAggregateId>
+            where TAggregateId : notnull
         {
             private readonly Dictionary<object, IReadOnlyList<object>> _eventStorage = new();
 
-            public Task<IEnumerable<DomainEvent<TAggregateId>>> LoadAsync<TAggregateId>(TAggregateId aggregateId, CancellationToken cancellationToken)
-                where TAggregateId : notnull
+            public Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(TAggregateId aggregateId, CancellationToken cancellationToken)
             {
-                var events = (IReadOnlyList<DomainEvent<TAggregateId>>)_eventStorage[aggregateId];
+                var events = (IReadOnlyList<AggregateEvent<TAggregateId>>)_eventStorage[aggregateId];
                 return Task.FromResult(events.AsEnumerable());
             }
 
-            public Task StoreAsync<TAggregate, TAggregateId>(TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
+            public Task StoreAsync<TAggregate>(TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
                 where TAggregate : IAggregate<TAggregateId>
-                where TAggregateId : notnull
             {
                 var key = aggregate.AggregateId;
                 _eventStorage[key] = events;
@@ -37,7 +36,7 @@ namespace Yaevh.EventSourcing.Core.Tests
 
         private class FakePublisher : IPublisher
         {
-            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
                 => Task.CompletedTask;
         }
 
@@ -45,7 +44,7 @@ namespace Yaevh.EventSourcing.Core.Tests
         {
             private readonly List<object> _publishedEvents = new();
             public IEnumerable<object> PublishedEvents => _publishedEvents;
-            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
             {
                 _publishedEvents.Add(@event);
                 return Task.CompletedTask;
@@ -66,7 +65,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.DoSomething("two", now2);
             aggregate.DoSomething("three", now3);
 
-            var aggregateStore = new FakeAggregateStore();
+            var aggregateStore = new FakeAggregateStore<Guid>();
 
             using ILoggerFactory factory = LoggerFactory.Create(builder
                 => builder.AddXUnit(_testOutputHelper).SetMinimumLevel(LogLevel.Trace));
@@ -102,7 +101,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.DoSomething("two", now2);
             aggregate.DoSomething("three", now3);
 
-            var aggregateStore = new FakeAggregateStore();
+            var aggregateStore = new FakeAggregateStore<Guid>();
 
             using ILoggerFactory factory = LoggerFactory.Create(builder
                 => builder.AddXUnit(_testOutputHelper).SetMinimumLevel(LogLevel.Trace));
@@ -122,7 +121,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             // Assert
             publisher.PublishedEvents.Should().SatisfyRespectively(
                 first => {
-                    var @event = first.Should().BeOfType<DomainEvent<Guid>>().Subject;
+                    var @event = first.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("one");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now1);
@@ -132,7 +131,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     metadata.EventIndex.Should().Be(1);
                 },
                 second => {
-                    var @event = second.Should().BeOfType<DomainEvent<Guid>>().Subject;
+                    var @event = second.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("two");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now2);
@@ -142,7 +141,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     metadata.EventIndex.Should().Be(2);
                 },
                 third => {
-                    var @event = third.Should().BeOfType<DomainEvent<Guid>>().Subject;
+                    var @event = third.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("three");
                     var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
                     metadata.DateTime.Should().Be(now3);

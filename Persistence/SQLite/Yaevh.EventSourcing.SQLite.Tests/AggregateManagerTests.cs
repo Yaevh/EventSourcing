@@ -3,21 +3,17 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System.Collections.Generic;
 using System.Threading;
 using Yaevh.EventSourcing.Core;
+using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite.Tests
 {
     public class AggregateManagerTests
     {
-        private readonly IReadOnlyDictionary<Type, IAggregateIdSerializer> _knownAggregateIdSerializers =
-            new Dictionary<Type, IAggregateIdSerializer>() {
-                [typeof(Guid)] = new GuidAggregateIdSerializer()
-            };
-
-
-        #region support classes
+        #region supporting classes
         private class FakePublisher : IPublisher
         {
-            public Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+                where TAggregateId : notnull
                 => Task.CompletedTask;
         }
         #endregion
@@ -29,7 +25,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             // Arrange
             var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
-            var eventSerializer = new SystemTextJsonSerializer();
+            var eventSerializer = new SystemTextJsonEventSerializer();
 
             var aggregate = new BasicAggregate(Guid.NewGuid());
             var now1 = DateTimeOffset.Now;
@@ -39,7 +35,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
+            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
                 aggregateStore,
                 new DefaultAggregateFactory(),

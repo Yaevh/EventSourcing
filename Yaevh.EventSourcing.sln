@@ -3,16 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core", "Yaevh.EventSourcing.Core\Yaevh.EventSourcing.Core.csproj", "{D4CC1AC4-734E-49DE-92D1-4CADAEB509FE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core.Tests", "Yaevh.EventSourcing.Core.Tests\Yaevh.EventSourcing.Core.Tests.csproj", "{A2255176-16E0-47D4-9AFC-3B0FDCEB92B6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core.Specs", "Yaevh.EventSourcing.Core.Specs\Yaevh.EventSourcing.Core.Specs.csproj", "{432EAE84-2738-49C0-91F8-11CE6AAD223C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.SQLite", "Yaevh.EventSourcing.SQLite\Yaevh.EventSourcing.SQLite.csproj", "{B6DD8990-1A88-4C21-86B5-9760E37B827E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.SQLite.Tests", "Yaevh.EventSourcing.SQLite.Tests\Yaevh.EventSourcing.SQLite.Tests.csproj", "{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A5E458F-8005-4E23-ACF2-67582D56F843}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
@@ -22,12 +12,38 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.Abstractions", "Yaevh.EventSourcing.Abstractions\Yaevh.EventSourcing.Abstractions.csproj", "{D3E788F4-6E82-468E-A933-5008FFFC600C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core", "Yaevh.EventSourcing.Core\Yaevh.EventSourcing.Core.csproj", "{D4CC1AC4-734E-49DE-92D1-4CADAEB509FE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core.Tests", "Yaevh.EventSourcing.Core.Tests\Yaevh.EventSourcing.Core.Tests.csproj", "{A2255176-16E0-47D4-9AFC-3B0FDCEB92B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.Core.Specs", "Yaevh.EventSourcing.Core.Specs\Yaevh.EventSourcing.Core.Specs.csproj", "{432EAE84-2738-49C0-91F8-11CE6AAD223C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Persistence", "Persistence", "{F6C97C1F-1D99-4B09-B21A-EE5BC806569D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.Persistence", "Persistence\Yaevh.EventSourcing.Persistence\Yaevh.EventSourcing.Persistence.csproj", "{CAC5C709-210A-4065-B928-9361362D6CC6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCore", "EFCore", "{E3C98C14-7863-4FD3-A488-71050863C15C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.EFCore", "Persistence\EFCore\Yaevh.EventSourcing.EFCore\Yaevh.EventSourcing.EFCore.csproj", "{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{1BB54178-A627-422A-969C-F702E7998FB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.SQLite", "Persistence\SQLite\Yaevh.EventSourcing.SQLite\Yaevh.EventSourcing.SQLite.csproj", "{B6DD8990-1A88-4C21-86B5-9760E37B827E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.SQLite.Tests", "Persistence\SQLite\Yaevh.EventSourcing.SQLite.Tests\Yaevh.EventSourcing.SQLite.Tests.csproj", "{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.EFCore.Tests", "Persistence\EFCore\Yaevh.EventSourcing.EFCore.Tests\Yaevh.EventSourcing.EFCore.Tests.csproj", "{5C9D9157-EE97-44C4-81CA-4660B520D111}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D4CC1AC4-734E-49DE-92D1-4CADAEB509FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4CC1AC4-734E-49DE-92D1-4CADAEB509FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4CC1AC4-734E-49DE-92D1-4CADAEB509FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,6 +56,14 @@ Global
 		{432EAE84-2738-49C0-91F8-11CE6AAD223C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{432EAE84-2738-49C0-91F8-11CE6AAD223C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{432EAE84-2738-49C0-91F8-11CE6AAD223C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC5C709-210A-4065-B928-9361362D6CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC5C709-210A-4065-B928-9361362D6CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC5C709-210A-4065-B928-9361362D6CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC5C709-210A-4065-B928-9361362D6CC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B6DD8990-1A88-4C21-86B5-9760E37B827E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B6DD8990-1A88-4C21-86B5-9760E37B827E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6DD8990-1A88-4C21-86B5-9760E37B827E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,13 +72,22 @@ Global
 		{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3E788F4-6E82-468E-A933-5008FFFC600C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CAC5C709-210A-4065-B928-9361362D6CC6} = {F6C97C1F-1D99-4B09-B21A-EE5BC806569D}
+		{E3C98C14-7863-4FD3-A488-71050863C15C} = {F6C97C1F-1D99-4B09-B21A-EE5BC806569D}
+		{E9C993DF-311F-4FF7-82BB-DAB5B1AFC3AA} = {E3C98C14-7863-4FD3-A488-71050863C15C}
+		{1BB54178-A627-422A-969C-F702E7998FB6} = {F6C97C1F-1D99-4B09-B21A-EE5BC806569D}
+		{B6DD8990-1A88-4C21-86B5-9760E37B827E} = {1BB54178-A627-422A-969C-F702E7998FB6}
+		{09BDEAF4-60E6-4744-8BC9-76BCC2B88C91} = {1BB54178-A627-422A-969C-F702E7998FB6}
+		{5C9D9157-EE97-44C4-81CA-4660B520D111} = {E3C98C14-7863-4FD3-A488-71050863C15C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65C9EBDC-5FA6-4A3A-92C1-7C5F5328511C}

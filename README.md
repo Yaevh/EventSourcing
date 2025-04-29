@@ -10,7 +10,7 @@ This library aims at several goals:
 2. To be just a library, and not a framework; thus, to be opt-in, and not force you to use the whole framework to achieve your goals
 3. Thus, to be simple to incorporate into your existing project as an opt-in feature
 4. All the features other than core ES functionality should be opt-in and implemented as separate packages; those "other" features include: persistence, read models, snapshots, duplicate command detection, mediator issues etc.
-5. To depend on some external libraries, but only those simple and non-polluting (as for now, it's only Ardalis.GuardClauses)
+5. If depending on any external libraries, those libraries should be simple and single-goal but only those simple and non-polluting (as for now, it's only [Ardalis.GuardClauses](https://github.com/ardalis/GuardClauses) for basic nullability checks).
 
 
 Right now, the library contains some basic ES functionalities, and basic persistence using SQLite.
