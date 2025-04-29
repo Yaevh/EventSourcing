@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing
 {
     /// <summary>
-    /// Informs the external component of an event
+    /// Informs the external components of that an AggregateEvent took place.
+    /// You may want to implement this interface to integrate with MassTransit or other messaging framework.
     /// </summary>
     public interface IPublisher
     {
-        Task Publish<TAggregateId>(DomainEvent<TAggregateId> @event, CancellationToken cancellationToken);
+        Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            where TAggregateId : notnull;
     }
 }

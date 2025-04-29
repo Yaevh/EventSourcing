@@ -1,5 +1,4 @@
-﻿using Ardalis.GuardClauses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -11,19 +10,18 @@ namespace Yaevh.EventSourcing.Core
     public abstract class Aggregate<TAggregate, TAggregateId> : IAggregate<TAggregateId>
         where TAggregate: Aggregate<TAggregate>
         where TAggregateId : notnull
-
     {
         public TAggregateId AggregateId { get; }
 
         public long Version { get; private set; } = 0;
 
 
-        private readonly List<DomainEvent<TAggregateId>> _uncommittedEvents = [];
-        public IReadOnlyList<DomainEvent<TAggregateId>> UncommittedEvents => _uncommittedEvents.AsReadOnly();
+        private readonly List<AggregateEvent<TAggregateId>> _uncommittedEvents = [];
+        public IReadOnlyList<AggregateEvent<TAggregateId>> UncommittedEvents => _uncommittedEvents.AsReadOnly();
 
         protected Aggregate(TAggregateId aggregateId)
         {
-            Guard.Against.Default(aggregateId);
+            ArgumentNullException.ThrowIfNull(aggregateId);
             AggregateId = aggregateId;
         }
 
@@ -36,12 +34,12 @@ namespace Yaevh.EventSourcing.Core
 
         protected void RaiseEvent(IEventPayload @event, IEventMetadata<TAggregateId> metadata)
         {
-            _uncommittedEvents.Add(new DomainEvent<TAggregateId>(@event, metadata));
+            _uncommittedEvents.Add(new AggregateEvent<TAggregateId>(@event, metadata));
             ++Version;
             Apply(@event);
         }
 
-        public void Load(IEnumerable<DomainEvent<TAggregateId>> events)
+        public void Load(IEnumerable<AggregateEvent<TAggregateId>> events)
         {
             foreach (var @event in events)
             {
@@ -50,10 +48,10 @@ namespace Yaevh.EventSourcing.Core
             }
         }
 
-        protected abstract void Apply(IEventPayload aggregateEvent);
+        protected abstract void Apply(IEventPayload? aggregateEvent);
 
 
-        public async Task<IReadOnlyList<DomainEvent<TAggregateId>>> CommitAsync(IAggregateStore aggregateStore, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IAggregateStore<TAggregateId> aggregateStore, CancellationToken cancellationToken)
         {
             var newEvents = UncommittedEvents.ToImmutableList();
             await aggregateStore.StoreAsync(this, newEvents, cancellationToken);

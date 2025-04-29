@@ -27,10 +27,10 @@ namespace Yaevh.EventSourcing.Core
             long eventIndex)
         {
             Guard.Against.Default(eventId);
-            Guard.Against.NullOrWhiteSpace(eventName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
             Guard.Against.Default(dateTime);
             Guard.Against.Default(aggregateId);
-            Guard.Against.NullOrWhiteSpace(aggregateName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(aggregateName);
             Guard.Against.Default(eventIndex);
 
             EventId = eventId;
@@ -50,7 +50,7 @@ namespace Yaevh.EventSourcing.Core
             Guard.Against.Default(dateTime);
             return new DefaultEventMetadata<TAggregateId>(
                 dateTime,
-                Guid.NewGuid(),
+                MassTransit.NewId.Next().ToSequentialGuid(),
                 @event.GetType().AssemblyQualifiedName!,
                 aggregate.AggregateId,
                 aggregate.GetType().AssemblyQualifiedName!,

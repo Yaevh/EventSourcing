@@ -1,72 +1,68 @@
-﻿using Ardalis.GuardClauses;
-using Dapper;
+﻿using Dapper;
 using System.Collections.Concurrent;
 using System.Data;
 using Yaevh.EventSourcing.Core;
+using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite
 {
-    public class AggregateStore : IAggregateStore
+    public class AggregateStore<TAggregateId> : IAggregateStore<TAggregateId>
+        where TAggregateId : notnull
     {
+        private static readonly ConcurrentDictionary<string, Type> _typeCache = new();
+
         private readonly Func<IDbConnection> _dbConnectionFactory;
         private readonly IEventSerializer _eventSerializer;
-        private readonly IReadOnlyDictionary<Type, IAggregateIdSerializer> _aggregateIdSerializers;
-        private readonly ConcurrentDictionary<string, Type> _typeCache = new();
+        private readonly IAggregateIdSerializer<TAggregateId> _aggregateIdSerializer;
         public AggregateStore(
             Func<IDbConnection> dbConnectionFactory,
             IEventSerializer eventSerializer,
-            IReadOnlyDictionary<Type, IAggregateIdSerializer> aggregateIdSerializers)
+            IAggregateIdSerializer<TAggregateId> aggregateIdSerializer)
         {
             _dbConnectionFactory = dbConnectionFactory ?? throw new ArgumentNullException(nameof(dbConnectionFactory));
             _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
-            _aggregateIdSerializers = aggregateIdSerializers ?? throw new ArgumentNullException(nameof(aggregateIdSerializers));
+            _aggregateIdSerializer = aggregateIdSerializer ?? throw new ArgumentNullException(nameof(aggregateIdSerializer));
         }
 
-        public async Task<IEnumerable<DomainEvent<TAggregateId>>> LoadAsync<TAggregateId>(
+        public async Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(
             TAggregateId aggregateId, CancellationToken cancellationToken)
-            where TAggregateId : notnull
         {
-            Guard.Against.Null(aggregateId);
+            ArgumentNullException.ThrowIfNull(aggregateId);
 
             await EnsureDatabase(cancellationToken);
-
-            var aggregateIdSerializer = (IAggregateIdSerializer<TAggregateId>)_aggregateIdSerializers[typeof(TAggregateId)];
 
             using (var connection = _dbConnectionFactory.Invoke())
             {
                 const string sql = @"
                     SELECT
-                        DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Data
+                        DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Payload
                     FROM Events
                     WHERE
                         AggregateId = @AggregateId
                     ORDER BY
                         EventIndex ASC";
-                var parameters = new { AggregateId = aggregateIdSerializer.Serialize(aggregateId) };
+                var parameters = new { AggregateId = _aggregateIdSerializer.Serialize(aggregateId) };
                 var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
                 var results = await connection.QueryAsync<EventData>(command);
-                return results.Select(x => ParseToDomainEvent<TAggregateId>(x));
+                return results.Select(eventData => ParseToDomainEvent(eventData));
             }
         }
 
-        public async Task StoreAsync<TAggregate, TAggregateId>(
-            TAggregate aggregate, IReadOnlyList<DomainEvent<TAggregateId>> events, CancellationToken cancellationToken)
+        public async Task StoreAsync<TAggregate>(
+            TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
             where TAggregate : notnull, IAggregate<TAggregateId>
-            where TAggregateId : notnull
         {
-            Guard.Against.Null(aggregate);
-            Guard.Against.Null(events);
+            ArgumentNullException.ThrowIfNull(aggregate);
+            ArgumentNullException.ThrowIfNull(events);
 
             await EnsureDatabase(cancellationToken);
-
-            var aggregateIdSerializer = (IAggregateIdSerializer<TAggregateId>)_aggregateIdSerializers[typeof(TAggregateId)];
 
             const string sql = @"
                 INSERT INTO
                     Events
-                        (DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Data)
+                        (DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Payload)
                     VALUES
-                        (@DateTime, @EventId, @EventName, @AggregateId, @AggregateName, @EventIndex, @Data);
+                        (@DateTime, @EventId, @EventName, @AggregateId, @AggregateName, @EventIndex, @Payload);
                 SELECT last_insert_rowid() FROM Events";
 
             using (var connection = _dbConnectionFactory.Invoke())
@@ -77,10 +73,10 @@ namespace Yaevh.EventSourcing.SQLite
                         DateTime = @event.Metadata.DateTime,
                         EventId = @event.Metadata.EventId,
                         EventName = @event.Metadata.EventName,
-                        AggregateId = aggregateIdSerializer.Serialize(@event.Metadata.AggregateId),
+                        AggregateId = _aggregateIdSerializer.Serialize(@event.Metadata.AggregateId),
                         AggregateName = @event.Metadata.AggregateName,
                         EventIndex = @event.Metadata.EventIndex,
-                        Data = _eventSerializer.Serialize(@event.Payload)
+                        Payload = _eventSerializer.Serialize(@event.Payload)
                     };
                     var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
                     await connection.ExecuteAsync(command);
@@ -101,31 +97,28 @@ namespace Yaevh.EventSourcing.SQLite
                         AggregateId TEXT NOT NULL,
                         AggregateName TEXT NOT NULL,
                         EventIndex INT NOT NULL,
-                        Data TEXT NOT NULL
+                        Payload TEXT NOT NULL
                     )";
                 var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        private DomainEvent<TAggregateId> ParseToDomainEvent<TAggregateId>(EventData source)
-            where TAggregateId : notnull
+        private AggregateEvent<TAggregateId> ParseToDomainEvent(EventData source)
         {
-            var aggregateIdSerializer = (IAggregateIdSerializer<TAggregateId>)_aggregateIdSerializers[typeof(TAggregateId)];
-
             var metadata = new DefaultEventMetadata<TAggregateId>(
                 DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture),
                 Guid.Parse(source.EventId),
                 source.EventName,
-                aggregateIdSerializer.Deserialize(source.AggregateId),
+                _aggregateIdSerializer.Deserialize(source.AggregateId),
                 source.AggregateName,
                 source.EventIndex);
 
             var type = _typeCache.GetOrAdd(metadata.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
 
-            var @event = _eventSerializer.Deserialize(source.Data, type) as IEventPayload;
+            var @event = _eventSerializer.Deserialize(source.Payload, type) as IEventPayload;
 
-            return new DomainEvent<TAggregateId>(@event!, metadata);
+            return new AggregateEvent<TAggregateId>(@event, metadata);
         }
 
 
@@ -136,6 +129,6 @@ namespace Yaevh.EventSourcing.SQLite
             string AggregateId,
             string AggregateName,
             long EventIndex,
-            string Data);
+            string Payload);
     }
 }

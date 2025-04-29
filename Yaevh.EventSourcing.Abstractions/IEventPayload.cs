@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing;
 
 /// <summary>
-/// A base interface for event payload; that is, its domain-specific data
+/// A base interface for event payload; that is, the domain-specific data for a domain event
 /// </summary>
 public interface IEventPayload { }

@@ -1,4 +1,4 @@
-custom metadata
+custom metadata - should probably be per persistence provider
 ReadModels/Projections - maybe?
 Snapshots
 duplicate command detection - is it needed here?
@@ -7,3 +7,5 @@ Event versioning
 Event upcasting
 Arch tests: almost no class should be used in tests, only interfaces
 IAggregate -> AgregateFunctionality/AggregatePart (?)
+
+Ardalis.GuardClauses - can it be replaced with ArgumentException.ThrowIfDefault()?

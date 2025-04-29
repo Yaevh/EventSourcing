@@ -3,25 +3,21 @@ using FluentAssertions;
 using System.Collections.Generic;
 using System.Threading;
 using Yaevh.EventSourcing.Core;
+using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite.Tests
 {
     public class AggregateStoreTests
     {
-        private readonly IReadOnlyDictionary<Type, IAggregateIdSerializer> _knownAggregateIdSerializers =
-            new Dictionary<Type, IAggregateIdSerializer>() {
-                [typeof(Guid)] = new GuidAggregateIdSerializer()
-            };
-
         [Fact(DisplayName = "A01. Database is sane: can be created and queried")]
         public async Task DatabaseCanBeCreatedAndQueried()
         {
             // Arrange
             var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
-            var eventSerializer = new SystemTextJsonSerializer();
+            var eventSerializer = new SystemTextJsonEventSerializer();
 
-            var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
+            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             // Act & Assert - should not throw
             var events = await aggregateStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
@@ -35,7 +31,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             // Arrange
             var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
-            var eventSerializer = new SystemTextJsonSerializer();
+            var eventSerializer = new SystemTextJsonEventSerializer();
             var aggregateIdSerializer = new GuidAggregateIdSerializer();
 
             var aggregate = new BasicAggregate(Guid.NewGuid());
@@ -46,15 +42,15 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
+            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             // Act
             await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
-            // Assert
+            // Assert by querying the DB manually
             const string sql = @"
                 SELECT
-                    DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Data
+                    DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Payload
                 FROM Events
                 WHERE
                     AggregateId = @AggregateId
@@ -62,11 +58,11 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     EventIndex ASC";
             var parameters = new { AggregateId = aggregateIdSerializer.Serialize(aggregate.AggregateId) };
             var command = new CommandDefinition(sql, parameters: parameters);
-            var results = await connection.QueryAsync<AggregateStore.EventData>(command);
+            var results = await connection.QueryAsync<AggregateStore<Guid>.EventData>(command);
 
             results.Should().SatisfyRespectively(
                 jeden => {
-                    jeden.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
+                    jeden.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
                     DateTimeOffset.Parse(jeden.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now1);
                     jeden.EventId.Should().NotBeEmpty();
                     jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
@@ -75,7 +71,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     jeden.EventIndex.Should().Be(1);
                 },
                 dwa => {
-                    dwa.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
+                    dwa.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
                     DateTimeOffset.Parse(dwa.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now2);
                     dwa.EventId.Should().NotBeEmpty();
                     dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
@@ -84,7 +80,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     dwa.EventIndex.Should().Be(2);
                 },
                 trzy => {
-                    trzy.Data.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
+                    trzy.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
                     DateTimeOffset.Parse(trzy.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now3);
                     trzy.EventId.Should().NotBeEmpty();
                     trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
@@ -100,7 +96,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             // Arrange
             var connection = new InMemorySqliteConnection();
             var connectionFactory = () => connection;
-            var eventSerializer = new SystemTextJsonSerializer();
+            var eventSerializer = new SystemTextJsonEventSerializer();
 
             var aggregate = new BasicAggregate(Guid.NewGuid());
             var now1 = DateTimeOffset.Now;
@@ -110,7 +106,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var aggregateStore = new AggregateStore(connectionFactory, eventSerializer, _knownAggregateIdSerializers);
+            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
