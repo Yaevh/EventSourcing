@@ -43,6 +43,8 @@ namespace Yaevh.EventSourcing.Core
         {
             foreach (var @event in events)
             {
+                if (@event.Metadata.EventIndex != Version + 1)
+                    throw new InvalidOperationException($"Event index {@event.Metadata.EventIndex} is out of order. Current version is {Version}.");
                 ++Version;
                 Apply(@event.Payload);
             }
