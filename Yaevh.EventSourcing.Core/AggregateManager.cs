@@ -46,7 +46,7 @@ namespace Yaevh.EventSourcing.Core
 
             foreach (var @event in events)
             {
-                await _publisher.Publish(@event, cancellationToken);
+                await _publisher.Publish(aggregate, @event, cancellationToken);
             }
         }
     }

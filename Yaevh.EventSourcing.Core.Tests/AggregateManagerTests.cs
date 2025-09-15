@@ -34,17 +34,15 @@ namespace Yaevh.EventSourcing.Core.Tests
             }
         }
 
-        private class FakePublisher : IPublisher
-        {
-            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
-                => Task.CompletedTask;
-        }
-
         private class PublisherStub : IPublisher
         {
             private readonly List<object> _publishedEvents = new();
             public IEnumerable<object> PublishedEvents => _publishedEvents;
-            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+
+            public Task Publish<TAggregate, TAggregateId>(
+                TAggregate aggregate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+                where TAggregate : IAggregate<TAggregateId>
+                where TAggregateId : notnull
             {
                 _publishedEvents.Add(@event);
                 return Task.CompletedTask;
@@ -74,7 +72,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
                 aggregateStore,
                 new DefaultAggregateFactory(),
-                new FakePublisher(),
+                new NullPublisher(),
                 logger);
 
             await aggregateManager.CommitAsync(aggregate, CancellationToken.None);

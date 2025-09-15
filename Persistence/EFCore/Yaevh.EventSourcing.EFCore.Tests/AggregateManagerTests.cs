@@ -11,16 +11,6 @@ namespace Yaevh.EventSourcing.EFCore.Tests
 {
     public class AggregateManagerTests
     {
-        #region supporting classes
-        private class FakePublisher : IPublisher
-        {
-            public Task Publish<TAggregateId>(AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
-                where TAggregateId : notnull
-                => Task.CompletedTask;
-        }
-        #endregion
-
-
         [Fact(DisplayName = "Loaded aggregate should match the stored one")]
         public async Task LoadedAggregateShouldMatchStoredOne()
         {
@@ -46,7 +36,7 @@ namespace Yaevh.EventSourcing.EFCore.Tests
             var aggregateManager = new AggregateManager<CalculationAggregate, Guid>(
                 aggregateStore,
                 new DefaultAggregateFactory(),
-                new FakePublisher(),
+                new NullPublisher(),
                 new NullLogger<AggregateManager<CalculationAggregate, Guid>>());
 
             await aggregateManager.CommitAsync(aggregate, token);
