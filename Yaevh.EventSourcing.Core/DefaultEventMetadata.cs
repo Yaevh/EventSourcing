@@ -1,5 +1,4 @@
-﻿using Ardalis.GuardClauses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,13 +25,13 @@ namespace Yaevh.EventSourcing.Core
             string aggregateName,
             long eventIndex)
         {
-            Guard.Against.Default(eventId);
+            if (eventId == default) throw new ArgumentException("Value cannot be the default GUID.", nameof(eventId));
             ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
-            Guard.Against.Default(dateTime);
-            Guard.Against.Default(aggregateId);
+            if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
+            if (aggregateId == null || aggregateId.Equals(default(TAggregateId))) throw new ArgumentException("Value cannot be the default value.", nameof(aggregateId));
             ArgumentException.ThrowIfNullOrWhiteSpace(aggregateName);
-            Guard.Against.Default(eventIndex);
-
+            if (eventIndex <= 0) throw new ArgumentOutOfRangeException(nameof(eventIndex), "Value cannot be negative or zero.");
+            
             EventId = eventId;
             EventName = eventName;
             DateTime = dateTime;
@@ -45,9 +44,10 @@ namespace Yaevh.EventSourcing.Core
             TAggregate aggregate, IEventPayload @event, DateTimeOffset dateTime)
             where TAggregate : IAggregate<TAggregateId>
         {
-            Guard.Against.Default(aggregate);
-            Guard.Against.Default(@event);
-            Guard.Against.Default(dateTime);
+            ArgumentNullException.ThrowIfNull(aggregate);
+            ArgumentNullException.ThrowIfNull(@event);
+            if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
+
             return new DefaultEventMetadata<TAggregateId>(
                 dateTime,
                 MassTransit.NewId.Next().ToSequentialGuid(),
