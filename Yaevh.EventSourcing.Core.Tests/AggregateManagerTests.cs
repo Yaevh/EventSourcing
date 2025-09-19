@@ -25,10 +25,12 @@ namespace Yaevh.EventSourcing.Core.Tests
                 return Task.FromResult(events.AsEnumerable());
             }
 
-            public Task StoreAsync<TAggregate>(TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
-                where TAggregate : IAggregate<TAggregateId>
+            public Task StoreAsync(IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
             {
-                var key = aggregate.AggregateId;
+                if (events.Count == 0)
+                    return Task.CompletedTask;
+
+                var key = events.First().Metadata.AggregateId;
                 _eventStorage[key] = events;
                 return Task.CompletedTask;
             }

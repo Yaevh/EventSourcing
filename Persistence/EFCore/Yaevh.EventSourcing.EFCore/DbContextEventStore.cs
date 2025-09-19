@@ -41,11 +41,9 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         return eventDatas.Select(eventData => ToAggregateEvent(eventData));
     }
 
-    public async Task StoreAsync<TAggregate>(
-        TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
-        where TAggregate: IAggregate<TAggregateId>
+    public async Task StoreAsync(
+        IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(aggregate);
         ArgumentNullException.ThrowIfNull(events);
 
         await _dbContext.Events.AddRangeAsync(events.Select(@event => ToEventData(@event)), cancellationToken);

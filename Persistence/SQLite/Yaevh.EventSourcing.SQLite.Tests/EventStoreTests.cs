@@ -45,7 +45,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             // Act
-            await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
+            await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
 
             // Assert by querying the DB manually
             const string sql = @"
@@ -108,7 +108,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
             var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
-            await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
+            await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
 
             // Act
             var events = await eventStore.LoadAsync(aggregate.AggregateId, CancellationToken.None);

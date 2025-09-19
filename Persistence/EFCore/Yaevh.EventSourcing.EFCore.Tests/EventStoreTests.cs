@@ -38,7 +38,7 @@ public class EventStoreTests
         aggregate.Multiply(4);
         aggregate.Divide(3);
 
-        await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, token);
+        await eventStore.StoreAsync(aggregate.UncommittedEvents, token);
         await dbContext.SaveChangesAsync(token);
 
 

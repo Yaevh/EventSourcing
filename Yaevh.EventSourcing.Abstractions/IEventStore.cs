@@ -13,26 +13,26 @@ namespace Yaevh.EventSourcing
         where TAggregateId : notnull
     {
         /// <summary>
-        /// Load the latest version of an aggregate.
+        /// Load the events associated with a particular aggregate from persistent storage.
         /// </summary>
         /// <typeparam name="TAggregateId"></typeparam>
         /// <param name="aggregateId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IEnumerable<AggregateEvent<TAggregateId>>>
-            LoadAsync(TAggregateId aggregateId, CancellationToken cancellationToken);
+        Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(
+            TAggregateId aggregateId,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Save the aggregate and its events to a persistent storage.
+        /// Save the aggregate's events to a persistent storage.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
-        /// <typeparam name="TAggregateId"></typeparam>
         /// <param name="aggregate"></param>
         /// <param name="events"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task StoreAsync<TAggregate>(
-            TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
-            where TAggregate : notnull, IAggregate<TAggregateId>;
+        Task StoreAsync(
+            IReadOnlyList<AggregateEvent<TAggregateId>> events,
+            CancellationToken cancellationToken);
     }
 }

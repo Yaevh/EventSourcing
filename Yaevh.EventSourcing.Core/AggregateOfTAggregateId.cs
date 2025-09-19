@@ -56,7 +56,7 @@ namespace Yaevh.EventSourcing.Core
         public async Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IEventStore<TAggregateId> eventStore, CancellationToken cancellationToken)
         {
             var newEvents = UncommittedEvents.ToImmutableList();
-            await eventStore.StoreAsync(this, newEvents, cancellationToken);
+            await eventStore.StoreAsync(newEvents, cancellationToken);
             _uncommittedEvents.Clear();
             return newEvents;
         }

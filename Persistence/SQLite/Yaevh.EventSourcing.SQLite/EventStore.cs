@@ -48,11 +48,9 @@ namespace Yaevh.EventSourcing.SQLite
             }
         }
 
-        public async Task StoreAsync<TAggregate>(
-            TAggregate aggregate, IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
-            where TAggregate : notnull, IAggregate<TAggregateId>
+        public async Task StoreAsync(
+            IReadOnlyList<AggregateEvent<TAggregateId>> events, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(aggregate);
             ArgumentNullException.ThrowIfNull(events);
 
             await EnsureDatabase(cancellationToken);
