@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.EFCore.Tests;
 
-public class AggregateStoreTests
+public class EventStoreTests
 {
     [Fact(DisplayName = "00. Basic aggregate sanity check")]
     public void AggregateSanityCheck()
@@ -28,7 +27,7 @@ public class AggregateStoreTests
 
         await using var postgresContainer = new PostgreSqlBuilder().Build();
         await postgresContainer.StartAsync(token);
-        var (dbContext, aggregateStore) = await BuildDbContextAndAggregateStore(postgresContainer);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
 
 
         // Act
@@ -39,7 +38,7 @@ public class AggregateStoreTests
         aggregate.Multiply(4);
         aggregate.Divide(3);
 
-        await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, token);
+        await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, token);
         await dbContext.SaveChangesAsync(token);
 
 
@@ -75,7 +74,7 @@ public class AggregateStoreTests
 
         await using var postgresContainer = new PostgreSqlBuilder().Build();
         await postgresContainer.StartAsync(token);
-        var (dbContext, aggregateStore) = await BuildDbContextAndAggregateStore(postgresContainer);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
         
         var aggregateId = Guid.NewGuid();
         var aggregate = new CalculationAggregate(aggregateId);
@@ -84,15 +83,15 @@ public class AggregateStoreTests
         aggregate.Multiply(4);
         aggregate.Divide(3);
 
-        dbContext.Events.Add(aggregateStore.ToEventData(aggregate.UncommittedEvents[0]));
-        dbContext.Events.Add(aggregateStore.ToEventData(aggregate.UncommittedEvents[1]));
-        dbContext.Events.Add(aggregateStore.ToEventData(aggregate.UncommittedEvents[2]));
-        dbContext.Events.Add(aggregateStore.ToEventData(aggregate.UncommittedEvents[3]));
+        dbContext.Events.Add(eventStore.ToEventData(aggregate.UncommittedEvents[0]));
+        dbContext.Events.Add(eventStore.ToEventData(aggregate.UncommittedEvents[1]));
+        dbContext.Events.Add(eventStore.ToEventData(aggregate.UncommittedEvents[2]));
+        dbContext.Events.Add(eventStore.ToEventData(aggregate.UncommittedEvents[3]));
 
         await dbContext.SaveChangesAsync(token);
 
         // Act
-        var aggregateEvents = await aggregateStore.LoadAsync(aggregateId, token);
+        var aggregateEvents = await eventStore.LoadAsync(aggregateId, token);
 
         
         // Assert
@@ -161,8 +160,8 @@ public class AggregateStoreTests
         return aggregate;
     }
 
-    private async Task<(TestDbContext, DbContextAggregateStore<TestDbContext, Guid>)>
-        BuildDbContextAndAggregateStore(PostgreSqlContainer postgresContainer)
+    private async Task<(TestDbContext, DbContextEventStore<TestDbContext, Guid>)>
+        BuildDbContextAndEventStore(PostgreSqlContainer postgresContainer)
     {
         var token = CancellationToken.None;
 
@@ -172,7 +171,7 @@ public class AggregateStoreTests
         var dbContext = new TestDbContext(dbContextOptionsBuilder.Options, eventSerializer);
         await dbContext.Database.MigrateAsync(token);
 
-        return (dbContext, new DbContextAggregateStore<TestDbContext, Guid>(dbContext, eventSerializer));
+        return (dbContext, new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer));
     }
 
 }

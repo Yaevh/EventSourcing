@@ -24,7 +24,7 @@ namespace Yaevh.EventSourcing.EFCore.Tests
             var eventSerializer = new SystemTextJsonEventSerializer();
             var dbContext = new TestDbContext(dbContextOptionsBuilder.Options, eventSerializer);
             await dbContext.Database.MigrateAsync(token);
-            var aggregateStore = new DbContextAggregateStore<TestDbContext, Guid>(dbContext, eventSerializer);
+            var eventStore = new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer);
 
             var aggregateId = Guid.NewGuid();
             var aggregate = new CalculationAggregate(aggregateId);
@@ -34,7 +34,7 @@ namespace Yaevh.EventSourcing.EFCore.Tests
             aggregate.Divide(3);
 
             var aggregateManager = new AggregateManager<CalculationAggregate, Guid>(
-                aggregateStore,
+                eventStore,
                 new DefaultAggregateFactory(),
                 new NullPublisher(),
                 new NullLogger<AggregateManager<CalculationAggregate, Guid>>());

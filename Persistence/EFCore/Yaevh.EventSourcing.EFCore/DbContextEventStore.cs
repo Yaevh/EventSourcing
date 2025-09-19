@@ -7,11 +7,11 @@ using Yaevh.EventSourcing.Persistence;
 namespace Yaevh.EventSourcing.EFCore;
 
 /// <summary>
-/// An AggregateStore that uses an <see cref="EventsDbContext{TAggregateId}"/> to store aggregate events
+/// An EventStore that uses an <see cref="EventsDbContext{TAggregateId}"/> to store aggregate events
 /// </summary>
 /// <typeparam name="TDbContext"></typeparam>
 /// <typeparam name="TAggregateId"></typeparam>
-public class DbContextAggregateStore<TDbContext, TAggregateId> : IAggregateStore<TAggregateId>
+public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggregateId>
     where TDbContext : EventsDbContext<TAggregateId>
     where TAggregateId : notnull
 {
@@ -19,7 +19,7 @@ public class DbContextAggregateStore<TDbContext, TAggregateId> : IAggregateStore
 
     private readonly TDbContext _dbContext;
     private readonly IEventSerializer _eventSerializer;
-    public DbContextAggregateStore(
+    public DbContextEventStore(
         TDbContext dbContext,
         IEventSerializer eventSerializer)
     {

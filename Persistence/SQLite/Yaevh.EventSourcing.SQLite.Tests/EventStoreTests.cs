@@ -7,7 +7,7 @@ using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite.Tests
 {
-    public class AggregateStoreTests
+    public class EventStoreTests
     {
         [Fact(DisplayName = "A01. Database is sane: can be created and queried")]
         public async Task DatabaseCanBeCreatedAndQueried()
@@ -17,10 +17,10 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             var connectionFactory = () => connection;
             var eventSerializer = new SystemTextJsonEventSerializer();
 
-            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
+            var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             // Act & Assert - should not throw
-            var events = await aggregateStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
+            var events = await eventStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
 
             events.Should().BeEmpty();
         }
@@ -42,10 +42,10 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
+            var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
             // Act
-            await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
+            await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
             // Assert by querying the DB manually
             const string sql = @"
@@ -58,7 +58,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     EventIndex ASC";
             var parameters = new { AggregateId = aggregateIdSerializer.Serialize(aggregate.AggregateId) };
             var command = new CommandDefinition(sql, parameters: parameters);
-            var results = await connection.QueryAsync<AggregateStore<Guid>.EventData>(command);
+            var results = await connection.QueryAsync<EventStore<Guid>.EventData>(command);
 
             results.Should().SatisfyRespectively(
                 jeden => {
@@ -106,12 +106,12 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var aggregateStore = new AggregateStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
+            var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
 
-            await aggregateStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
+            await eventStore.StoreAsync(aggregate, aggregate.UncommittedEvents, CancellationToken.None);
 
             // Act
-            var events = await aggregateStore.LoadAsync(aggregate.AggregateId, CancellationToken.None);
+            var events = await eventStore.LoadAsync(aggregate.AggregateId, CancellationToken.None);
 
             // Assert
             events.Should().SatisfyRespectively(

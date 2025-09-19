@@ -14,7 +14,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             => _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
 
         #region supporting classes
-        private class FakeAggregateStore<TAggregateId> : IAggregateStore<TAggregateId>
+        private class FakeEventStore<TAggregateId> : IEventStore<TAggregateId>
             where TAggregateId : notnull
         {
             private readonly Dictionary<object, IReadOnlyList<object>> _eventStorage = new();
@@ -63,14 +63,14 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.DoSomething("two", now2);
             aggregate.DoSomething("three", now3);
 
-            var aggregateStore = new FakeAggregateStore<Guid>();
+            var eventStore = new FakeEventStore<Guid>();
 
             using ILoggerFactory factory = LoggerFactory.Create(builder
                 => builder.AddXUnit(_testOutputHelper).SetMinimumLevel(LogLevel.Trace));
             var logger = factory.CreateLogger<AggregateManager<BasicAggregate, Guid>>();
 
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
-                aggregateStore,
+                eventStore,
                 new DefaultAggregateFactory(),
                 new NullPublisher(),
                 logger);
@@ -99,7 +99,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.DoSomething("two", now2);
             aggregate.DoSomething("three", now3);
 
-            var aggregateStore = new FakeAggregateStore<Guid>();
+            var eventStore = new FakeEventStore<Guid>();
 
             using ILoggerFactory factory = LoggerFactory.Create(builder
                 => builder.AddXUnit(_testOutputHelper).SetMinimumLevel(LogLevel.Trace));
@@ -108,7 +108,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             var publisher = new PublisherStub();
 
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
-                aggregateStore,
+                eventStore,
                 new DefaultAggregateFactory(),
                 publisher,
                 logger);

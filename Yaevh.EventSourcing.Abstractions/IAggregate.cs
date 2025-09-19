@@ -28,11 +28,11 @@ namespace Yaevh.EventSourcing
         void Load(IEnumerable<AggregateEvent<TAggregateId>> events);
 
         /// <summary>
-        /// Stores the state of the aggregate in a given <see cref="IAggregateStore"/>
+        /// Stores the state of the aggregate in a given <see cref="IEventStore"/>
         /// </summary>
-        /// <param name="aggregateStore"></param>
+        /// <param name="eventStore"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IAggregateStore<TAggregateId> aggregateStore, CancellationToken cancellationToken);
+        Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IEventStore<TAggregateId> eventStore, CancellationToken cancellationToken);
     }
 }

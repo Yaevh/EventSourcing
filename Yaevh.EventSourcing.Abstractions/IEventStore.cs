@@ -9,7 +9,7 @@ namespace Yaevh.EventSourcing
     /// <summary>
     /// A persistent store responsible for storing and retrieving the aggregate events.
     /// </summary>
-    public interface IAggregateStore<TAggregateId>
+    public interface IEventStore<TAggregateId>
         where TAggregateId : notnull
     {
         /// <summary>

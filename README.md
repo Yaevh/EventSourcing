@@ -32,7 +32,7 @@ public class MyAggregate : Aggregate<MyAggregate>
 
 
     // the command we can issue on the aggregate; can be anything you want
-    public void DoSomething(string value, DateTimeOffset now)
+    public void UpdateCurrentValue(string value, DateTimeOffset now)
     {
         RaiseEvent(new MyEvent(value), now);
     }
@@ -60,11 +60,11 @@ var aggregate = new MyAggregate(Guid.NewGuid());
 var now1 = DateTimeOffset.Now;
 var now2 = now1 + TimeSpan.FromMinutes(1);
 var now3 = now2 + TimeSpan.FromHours(24);
-aggregate.DoSomething("one", now1);
-aggregate.DoSomething("two", now2);
-aggregate.DoSomething("three", now3);
+aggregate.UpdateCurrentValue("one", now1);
+aggregate.UpdateCurrentValue("two", now2);
+aggregate.UpdateCurrentValue("three", now3);
 
-// save the aggregate to the underlying AggregateStore
+// save the aggregate to the underlying EventStore
 await AggregateManager.CommitAsync(aggregate, CancellationToken.None);
 
 // restore the aggregate

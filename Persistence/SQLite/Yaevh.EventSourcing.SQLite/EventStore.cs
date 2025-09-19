@@ -6,7 +6,7 @@ using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite
 {
-    public class AggregateStore<TAggregateId> : IAggregateStore<TAggregateId>
+    public class EventStore<TAggregateId> : IEventStore<TAggregateId>
         where TAggregateId : notnull
     {
         private static readonly ConcurrentDictionary<string, Type> _typeCache = new();
@@ -14,7 +14,7 @@ namespace Yaevh.EventSourcing.SQLite
         private readonly Func<IDbConnection> _dbConnectionFactory;
         private readonly IEventSerializer _eventSerializer;
         private readonly IAggregateIdSerializer<TAggregateId> _aggregateIdSerializer;
-        public AggregateStore(
+        public EventStore(
             Func<IDbConnection> dbConnectionFactory,
             IEventSerializer eventSerializer,
             IAggregateIdSerializer<TAggregateId> aggregateIdSerializer)

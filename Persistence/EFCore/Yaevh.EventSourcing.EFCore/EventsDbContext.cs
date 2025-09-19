@@ -9,7 +9,7 @@ using Yaevh.EventSourcing.Persistence;
 namespace Yaevh.EventSourcing.EFCore;
 
 /// <summary>
-/// A <see cref="=DbContext"/> that stores Aggregate Events
+/// A <see cref="DbContext"/> that stores Aggregate Events
 /// </summary>
 /// <typeparam name="TAggregateId"></typeparam>
 public abstract class EventsDbContext<TAggregateId> : DbContext

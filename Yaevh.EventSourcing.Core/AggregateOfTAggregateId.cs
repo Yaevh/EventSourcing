@@ -53,10 +53,10 @@ namespace Yaevh.EventSourcing.Core
         protected abstract void Apply(IEventPayload? aggregateEvent);
 
 
-        public async Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IAggregateStore<TAggregateId> aggregateStore, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IEventStore<TAggregateId> eventStore, CancellationToken cancellationToken)
         {
             var newEvents = UncommittedEvents.ToImmutableList();
-            await aggregateStore.StoreAsync(this, newEvents, cancellationToken);
+            await eventStore.StoreAsync(this, newEvents, cancellationToken);
             _uncommittedEvents.Clear();
             return newEvents;
         }
