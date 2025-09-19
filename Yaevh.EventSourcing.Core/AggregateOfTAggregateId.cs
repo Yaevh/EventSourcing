@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 
 namespace Yaevh.EventSourcing.Core
 {
@@ -16,8 +11,14 @@ namespace Yaevh.EventSourcing.Core
         public long Version { get; private set; } = 0;
 
 
+        private readonly List<AggregateEvent<TAggregateId>> _committedEvents = new();
+        public IReadOnlyList<AggregateEvent<TAggregateId>> CommittedEvents => _committedEvents.AsReadOnly();
+
         private readonly List<AggregateEvent<TAggregateId>> _uncommittedEvents = [];
         public IReadOnlyList<AggregateEvent<TAggregateId>> UncommittedEvents => _uncommittedEvents.AsReadOnly();
+
+        public IReadOnlyCollection<AggregateEvent<TAggregateId>> AllEvents
+            => _committedEvents.Concat(_uncommittedEvents).ToImmutableList();
 
         protected Aggregate(TAggregateId aggregateId)
         {
@@ -47,6 +48,7 @@ namespace Yaevh.EventSourcing.Core
                     throw new InvalidOperationException($"Event index {@event.Metadata.EventIndex} is out of order. Current version is {Version}.");
                 ++Version;
                 Apply(@event.Payload);
+                _committedEvents.Add(@event);
             }
         }
 
@@ -57,6 +59,7 @@ namespace Yaevh.EventSourcing.Core
         {
             var newEvents = UncommittedEvents.ToImmutableList();
             await eventStore.StoreAsync(newEvents, cancellationToken);
+            _committedEvents.AddRange(newEvents);
             _uncommittedEvents.Clear();
             return newEvents;
         }
