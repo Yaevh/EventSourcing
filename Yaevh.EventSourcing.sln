@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaevh.EventSourcing.SQLite.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.EFCore.Tests", "Persistence\EFCore\Yaevh.EventSourcing.EFCore.Tests\Yaevh.EventSourcing.EFCore.Tests.csproj", "{5C9D9157-EE97-44C4-81CA-4660B520D111}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaevh.EventSourcing.Example", "Yaevh.EventSourcing.Example\Yaevh.EventSourcing.Example.csproj", "{1D1C9179-9D34-4CE2-A0F7-6F6394FC0475}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C9D9157-EE97-44C4-81CA-4660B520D111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D1C9179-9D34-4CE2-A0F7-6F6394FC0475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D1C9179-9D34-4CE2-A0F7-6F6394FC0475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D1C9179-9D34-4CE2-A0F7-6F6394FC0475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D1C9179-9D34-4CE2-A0F7-6F6394FC0475}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

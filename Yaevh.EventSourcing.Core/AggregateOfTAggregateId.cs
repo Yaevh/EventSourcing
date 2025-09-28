@@ -3,7 +3,7 @@
 namespace Yaevh.EventSourcing.Core
 {
     public abstract class Aggregate<TAggregate, TAggregateId> : IAggregate<TAggregateId>
-        where TAggregate: Aggregate<TAggregate>
+        where TAggregate: Aggregate<TAggregate, TAggregateId>
         where TAggregateId : notnull
     {
         public TAggregateId AggregateId { get; }
