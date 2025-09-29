@@ -27,6 +27,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
     }
 
+    
     public async Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(
         TAggregateId aggregateId, CancellationToken cancellationToken)
     {
@@ -47,6 +48,10 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         ArgumentNullException.ThrowIfNull(events);
 
         await _dbContext.Events.AddRangeAsync(events.Select(@event => ToEventData(@event)), cancellationToken);
+    }
+    public async Task<IEnumerable<TAggregateId>> GetAllAggregateIdsAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Events.Select(e => e.AggregateId).Distinct().ToListAsync(cancellationToken);
     }
 
     internal AggregateEvent<TAggregateId> ToAggregateEvent(EventData<TAggregateId> source)

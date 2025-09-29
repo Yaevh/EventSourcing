@@ -34,5 +34,17 @@ namespace Yaevh.EventSourcing
         Task StoreAsync(
             IReadOnlyList<AggregateEvent<TAggregateId>> events,
             CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Asynchronously retrieves all aggregate IDs.
+        /// </summary>
+        /// <remarks>The returned collection may be empty if no aggregate IDs are available. The order of
+        /// the  aggregate IDs in the collection is not guaranteed.</remarks>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.
+        /// Passing a canceled token will immediately  throw an <see cref="OperationCanceledException"/>.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an  <see cref="IEnumerable{T}"/>
+        /// of aggregate IDs.</returns>
+        Task<IEnumerable<TAggregateId>> GetAllAggregateIdsAsync(
+            CancellationToken cancellationToken);
     }
 }

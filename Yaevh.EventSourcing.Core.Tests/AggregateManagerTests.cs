@@ -17,11 +17,12 @@ namespace Yaevh.EventSourcing.Core.Tests
         private class FakeEventStore<TAggregateId> : IEventStore<TAggregateId>
             where TAggregateId : notnull
         {
-            private readonly Dictionary<object, IReadOnlyList<object>> _eventStorage = new();
+            private readonly Dictionary<TAggregateId, IReadOnlyList<AggregateEvent<TAggregateId>>> _eventStorage = new();
 
+            
             public Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(TAggregateId aggregateId, CancellationToken cancellationToken)
             {
-                var events = (IReadOnlyList<AggregateEvent<TAggregateId>>)_eventStorage[aggregateId];
+                var events = _eventStorage[aggregateId];
                 return Task.FromResult(events.AsEnumerable());
             }
 
@@ -33,6 +34,11 @@ namespace Yaevh.EventSourcing.Core.Tests
                 var key = events.First().Metadata.AggregateId;
                 _eventStorage[key] = events;
                 return Task.CompletedTask;
+            }
+
+            public Task<IEnumerable<TAggregateId>> GetAllAggregateIdsAsync(CancellationToken cancellationToken)
+            {
+                return Task.FromResult(_eventStorage.Keys.Cast<TAggregateId>().AsEnumerable());
             }
         }
 

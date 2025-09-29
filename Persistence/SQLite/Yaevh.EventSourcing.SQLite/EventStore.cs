@@ -83,6 +83,17 @@ namespace Yaevh.EventSourcing.SQLite
         }
 
 
+        public async Task<IEnumerable<TAggregateId>> GetAllAggregateIdsAsync(CancellationToken cancellationToken)
+        {
+            using (var connection = _dbConnectionFactory.Invoke())
+            {
+                const string sql = @"SELECT DISTINCT AggregateId FROM Events";
+                var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+                var results = await connection.QueryAsync<string>(command);
+                return results.Select(aggregateId => _aggregateIdSerializer.Deserialize(aggregateId));
+            }
+        }
+
         private async Task EnsureDatabase(CancellationToken cancellationToken)
         {
             using (var connection = _dbConnectionFactory.Invoke())
