@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yaevh.EventSourcing;
+﻿namespace Yaevh.EventSourcing;
 
 /// <summary>
 /// An event raised by an <see cref="IAggregate{TAggregateId}"/>, complete with its metadata

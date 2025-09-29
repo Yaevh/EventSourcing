@@ -1,4 +1,5 @@
 ﻿using Spectre.Console;
+using System.Text.Json;
 using Yaevh.EventSourcing.Example.Model;
 
 namespace Yaevh.EventSourcing.Example.Commands;
@@ -42,6 +43,7 @@ public class Detail
                 return;
             }
 
+            AnsiConsole.MarkupLine($"\n[underline]Account Details for {account.AccountNumber}:[/]\n");
             var table = new Table()
                 .AddColumn("Property")
                 .AddColumn("Value")
@@ -52,6 +54,24 @@ public class Detail
                 .AddRow("Is Closed", account.IsClosed.ToString())
                 .AddRow("Version", account.Version.ToString());
             AnsiConsole.Write(table);
+
+            AnsiConsole.MarkupLine("\n[underline]Event History:[/]\n");
+            var eventsTable = new Table()
+                .AddColumn("Event Index")
+                .AddColumn("Timestamp")
+                .AddColumn("Event Type")
+                .AddColumn("Payload");
+            foreach (var @event in account.AllEvents)
+            {
+                eventsTable.AddRow(
+                    @event.Metadata.EventIndex.ToString(),
+                    @event.Metadata.DateTime.ToString(),
+                    @event.Metadata.EventName.Substring(41, @event.Metadata.EventName.IndexOf(',') - 41),
+                    JsonSerializer.Serialize(@event.Payload, @event.Payload?.GetType(), new JsonSerializerOptions() {  WriteIndented = true })
+                );
+            }
+
+            AnsiConsole.Write(eventsTable);
         }
     }
 }

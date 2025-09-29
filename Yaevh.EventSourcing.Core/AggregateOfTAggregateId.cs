@@ -9,6 +9,7 @@ namespace Yaevh.EventSourcing.Core
         public TAggregateId AggregateId { get; }
 
         public long Version { get; private set; } = 0;
+        public bool IsTransient => Version == 0;
 
 
         private readonly List<AggregateEvent<TAggregateId>> _committedEvents = new();

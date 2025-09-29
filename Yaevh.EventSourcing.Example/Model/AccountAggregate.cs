@@ -34,6 +34,8 @@ public class AccountAggregate : Aggregate<AccountAggregate, AccountNumber>
 
     public void Deposit(decimal amount, Currency currency, DateTimeOffset now)
     {
+        if (IsTransient) throw new InvalidOperationException("Account is not yet opened");
+
         if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be positive");
         ArgumentNullException.ThrowIfNull(currency);
         if (currency != Currency) throw new ArgumentException("Currency mismatch", nameof(currency));
@@ -48,6 +50,8 @@ public class AccountAggregate : Aggregate<AccountAggregate, AccountNumber>
 
     public void Withdraw(decimal amount, Currency currency, DateTimeOffset now)
     {
+        if (IsTransient) throw new InvalidOperationException("Account is not yet opened");
+
         if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be positive");
         ArgumentNullException.ThrowIfNull(currency);
         if (currency != Currency) throw new ArgumentException("Currency mismatch", nameof(currency));
@@ -63,6 +67,8 @@ public class AccountAggregate : Aggregate<AccountAggregate, AccountNumber>
 
     public void CloseAccount(DateTimeOffset now)
     {
+        if (Version == 0) throw new InvalidOperationException("Account is not opened");
+
         if (Balance != 0) throw new InvalidOperationException("Account balance must be zero to close the account");
         if (IsClosed) throw new InvalidOperationException("Account is already closed");
 
