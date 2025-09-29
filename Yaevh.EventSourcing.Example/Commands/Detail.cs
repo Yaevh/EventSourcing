@@ -49,7 +49,6 @@ public class Detail
                 .AddColumn("Value")
                 .AddRow("Account Number", account.AccountNumber.ToString())
                 .AddRow("Owner Name", account.OwnerName)
-                .AddRow("Currency", account.Currency.ToString())
                 .AddRow("Balance", $"{account.Balance} {account.Currency}")
                 .AddRow("Is Closed", account.IsClosed.ToString())
                 .AddRow("Version", account.Version.ToString());

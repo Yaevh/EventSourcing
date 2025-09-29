@@ -28,12 +28,14 @@ builder.Services.AddScoped<IPublisher, Publisher>();
 builder.Services.AddScoped<IAggregateEventHandler<AccountAggregate, AccountNumber, AccountOpened>, AccountOpenedHandler>();
 builder.Services.AddScoped<IAggregateEventHandler<AccountAggregate, AccountNumber, AccountClosed>, AccountClosedHandler>();
 builder.Services.AddScoped<IAggregateEventHandler<AccountAggregate, AccountNumber, MoneyDeposited>, MoneyDepositedHandler>();
+builder.Services.AddScoped<IAggregateEventHandler<AccountAggregate, AccountNumber, MoneyWithdrawn>, MoneyWithdrawnHandler>();
 
 builder.Services.AddDbContext<BasicReadModelDbContext>(
     config => config.UseSqlite("Data Source=basicReadModels.sqlite"));
 
 builder.Services.AddTransient<List.Handler>();
 builder.Services.AddTransient<Detail.Handler>();
+builder.Services.AddTransient<RebuildReadModels.Handler>();
 builder.Services.AddTransient<Open.Handler>();
 builder.Services.AddTransient<Close.Handler>();
 builder.Services.AddTransient<Deposit.Handler>();
@@ -51,15 +53,14 @@ while (true)
         new SelectionPrompt<Type>()
             .Title("Choose your destiny")
             .AddChoices(new[] {
-                typeof(List.Handler), typeof(Detail.Handler),
+                typeof(List.Handler), typeof(Detail.Handler), typeof(RebuildReadModels.Handler),
                 typeof(Open.Handler), typeof(Close.Handler),
                 typeof(Deposit.Handler), typeof(Withdraw.Handler),
                 typeof(Exit.Handler)
             })
             .UseConverter(type => type.FullName!
                 .Replace("Yaevh.EventSourcing.Example.Commands.", string.Empty)
-                .Replace("+Handler", string.Empty)
-                .ToLower())
+                .Replace("+Handler", string.Empty))
     );
 
     AnsiConsole.Clear();
