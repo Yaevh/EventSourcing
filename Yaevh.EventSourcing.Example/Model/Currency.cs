@@ -4,4 +4,6 @@ public record Currency
 {
     public string CurrencyCode { get; }
     public Currency(string currencyCode) {  CurrencyCode = currencyCode; }
+
+    public override string ToString() => CurrencyCode;
 }

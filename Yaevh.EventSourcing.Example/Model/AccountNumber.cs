@@ -13,6 +13,7 @@ public record AccountNumber
             throw new ArgumentException("Account number can only contain letters, digits, and hyphens", nameof(value));
         Value = value;
     }
+
     public override string ToString() => Value;
 
 
