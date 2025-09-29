@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Yaevh.EventSourcing.Example;
 
@@ -30,12 +31,17 @@ internal class Publisher : IPublisher
 
                 var handlers = (IEnumerable<object>)scope.ServiceProvider.GetService(typeof(IEnumerable<>).MakeGenericType(eventHandlerType))!;
 
-                var tasks = handlers.Select(handler => {
-                    var method = handler.GetType().GetMethod("Handle")!;
-                    return (Task)method.Invoke(handler, [aggegate, @event.Payload, cancellationToken])!;
-                });
-
-                await Task.WhenAll(tasks);
+                foreach (var handler in handlers)
+                {
+                    var task = (Task)method.Invoke(handler, [aggegate, @event.Payload, cancellationToken])!;
+                    await task.ContinueWith(t => {
+                        if (t.IsFaulted)
+                        {
+                            // Log the exception or handle it as needed
+                            Console.WriteLine($"Error in event handler: {t.Exception}");
+                        }
+                    }, TaskContinuationOptions.OnlyOnFaulted);
+                }
             }, cancellationToken);
         }
         catch (Exception ex)

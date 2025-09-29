@@ -53,6 +53,7 @@ namespace Yaevh.EventSourcing.Core
             }
         }
 
+        // TODO change to AggregateEvent<TAggregateId>
         protected abstract void Apply(IEventPayload? aggregateEvent);
 
 

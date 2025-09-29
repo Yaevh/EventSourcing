@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,20 @@ namespace Yaevh.EventSourcing
         /// of the latest <see cref="AggregateEvent{TAggregateId}"/> applied to this Aggregate
         /// </summary>
         long Version { get; }
+
+        /// <summary>
+        /// Gets the list of events that have been committed to the EventStore.
+        /// </summary>
+        IReadOnlyList<AggregateEvent<TAggregateId>> CommittedEvents { get; }
+
+        /// <summary>
+        /// Gets the list of events that haven't yet been committed to the EventStore.
+        /// </summary>
+        IReadOnlyList<AggregateEvent<TAggregateId>> UncommittedEvents { get; }
+
+        IReadOnlyCollection<AggregateEvent<TAggregateId>> AllEvents
+            => CommittedEvents.Concat(UncommittedEvents).ToImmutableList();
+
 
         /// <summary>
         /// Restores the state of the aggregate based on given events
