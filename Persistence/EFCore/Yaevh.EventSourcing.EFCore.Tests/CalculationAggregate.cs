@@ -24,9 +24,9 @@ public class CalculationAggregate : Aggregate<CalculationAggregate>
     public void Divide(decimal value) => RaiseEvent(new DivisionEvent(value), DateTimeOffset.Now);
     #endregion
 
-    protected override void Apply(IEventPayload aggregateEvent)
+    protected override void Apply(AggregateEvent<Guid> aggregateEvent)
     {
-        Value = aggregateEvent switch {
+        Value = aggregateEvent.Payload switch {
             AdditionEvent add => Value + add.Value,
             SubtractionEvent sub => Value - sub.Value,
             MultiplicationEvent mul => Value * mul.Value,

@@ -22,9 +22,9 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             RaiseEvent(new BasicEvent(value), now);
         }
 
-        protected override void Apply(IEventPayload aggregateEvent)
+        protected override void Apply(AggregateEvent<Guid> aggregateEvent)
         {
-            switch (aggregateEvent)
+            switch (aggregateEvent.Payload)
             {
                 case BasicEvent @event:
                     CurrentValue = @event.Value;

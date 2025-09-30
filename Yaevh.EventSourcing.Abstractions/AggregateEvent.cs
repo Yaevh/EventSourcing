@@ -6,7 +6,24 @@
 /// <typeparam name="TAggregateId"></typeparam>
 /// <param name="Payload"></param>
 /// <param name="Metadata"></param>
-public record AggregateEvent<TAggregateId>(
+public class AggregateEvent<TAggregateId>(
     IEventPayload? Payload,
     IEventMetadata<TAggregateId> Metadata
-) where TAggregateId : notnull;
+)
+    where TAggregateId : notnull
+{
+    public IEventPayload? Payload { get; } = Payload;
+    public IEventMetadata<TAggregateId> Metadata { get; } = Metadata;
+}
+
+public class AggregateEvent<TAggregateId, TPayload>(
+    TPayload? Payload,
+    IEventMetadata<TAggregateId> Metadata
+) : AggregateEvent<TAggregateId>(Payload, Metadata)
+    where TAggregateId : notnull
+    where TPayload : IEventPayload
+{
+    public new TPayload? Payload { get; } = Payload;
+}
+
+

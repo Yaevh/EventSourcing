@@ -36,9 +36,10 @@ namespace Yaevh.EventSourcing.Core
 
         protected void RaiseEvent(IEventPayload @event, IEventMetadata<TAggregateId> metadata)
         {
-            _uncommittedEvents.Add(new AggregateEvent<TAggregateId>(@event, metadata));
+            var aggregateEvent = new AggregateEvent<TAggregateId>(@event, metadata);
+            _uncommittedEvents.Add(aggregateEvent);
             ++Version;
-            Apply(@event);
+            Apply(aggregateEvent);
         }
 
         public void Load(IEnumerable<AggregateEvent<TAggregateId>> events)
@@ -48,13 +49,12 @@ namespace Yaevh.EventSourcing.Core
                 if (@event.Metadata.EventIndex != Version + 1)
                     throw new InvalidOperationException($"Event index {@event.Metadata.EventIndex} is out of order. Current version is {Version}.");
                 ++Version;
-                Apply(@event.Payload);
+                Apply(@event);
                 _committedEvents.Add(@event);
             }
         }
 
-        // TODO change to AggregateEvent<TAggregateId>
-        protected abstract void Apply(IEventPayload? aggregateEvent);
+        protected abstract void Apply(AggregateEvent<TAggregateId> aggregateEvent);
 
 
         public async Task<IReadOnlyList<AggregateEvent<TAggregateId>>> CommitAsync(IEventStore<TAggregateId> eventStore, CancellationToken cancellationToken)

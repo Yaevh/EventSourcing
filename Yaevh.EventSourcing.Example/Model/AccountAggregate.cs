@@ -79,12 +79,12 @@ public class AccountAggregate : Aggregate<AccountAggregate, AccountNumber>
 
     #region applying events
 
-    protected override void Apply(IEventPayload? aggregateEvent)
+    protected override void Apply(AggregateEvent<AccountNumber> aggregateEvent)
     {
         ArgumentNullException.ThrowIfNull(aggregateEvent);
 
         // Dispatch to the appropriate Apply method based on the event type
-        switch (aggregateEvent)
+        switch (aggregateEvent.Payload)
         {
             case Events.AccountOpened e:
                 Apply(e);
