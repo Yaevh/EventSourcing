@@ -9,7 +9,11 @@ namespace Yaevh.EventSourcing.Core
         public TAggregateId AggregateId { get; }
 
         public long Version { get; private set; } = 0;
-        public bool IsTransient => Version == 0;
+
+        /// <summary>
+        /// Gets a value indicating whether the entity is newly created and has not seen any events yet.
+        /// </summary>
+        public bool IsNew => Version == 0;
 
 
         private readonly List<AggregateEvent<TAggregateId>> _committedEvents = new();

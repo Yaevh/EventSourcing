@@ -54,24 +54,10 @@ public class RebuildReadModels
 
 
         public async Task RebuildAggregate<TAggegate, TAggregateId>(TAggegate aggegate, CancellationToken cancellationToken)
-        where TAggegate : IAggregate<TAggregateId>
-        where TAggregateId : notnull
+            where TAggegate : IAggregate<TAggregateId>
+            where TAggregateId : notnull
         {
-
-            // TODO extract to a service
-            foreach (var @event in aggegate.CommittedEvents)
-            {
-                var eventHandlerType = typeof(IAggregateEventHandler<,,>).MakeGenericType(typeof(TAggegate), typeof(TAggregateId), @event.Payload.GetType());
-
-                var method = eventHandlerType.GetMethod("Handle")!;
-
-                var handlers = (IEnumerable<object>)_serviceProvider.GetService(typeof(IEnumerable<>).MakeGenericType(eventHandlerType))!;
-
-                foreach (var handler in handlers)
-                {
-                    await (Task)method.Invoke(handler, [aggegate, @event.Payload, cancellationToken])!;
-                }
-            }
+            await EventDispatcher.DispatchEvents(aggegate, aggegate.CommittedEvents, _serviceProvider, cancellationToken);
         }
     }
 }
