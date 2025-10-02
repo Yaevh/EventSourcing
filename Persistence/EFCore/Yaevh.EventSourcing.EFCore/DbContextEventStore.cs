@@ -58,17 +58,16 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
     {
         var eventType = _typeCache.GetOrAdd(source.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
 
-        var metadata = new DefaultEventMetadata<TAggregateId>(
-            source.DateTime,
-            source.EventId,
-            source.EventName,
-            source.AggregateId,
-            source.AggregateName,
-            source.EventIndex);
-
         var @event = _eventSerializer.Deserialize(source.Payload, eventType) as IEventPayload;
 
-        return new AggregateEvent<TAggregateId>(@event, metadata);
+        return new AggregateEvent<TAggregateId>(
+            @event!,
+            source.AggregateName,
+            source.AggregateId,
+            source.EventName,
+            source.EventId,
+            source.EventIndex,
+            source.DateTime.ToLocalTime());
     }
 
     internal EventData<TAggregateId> ToEventData(AggregateEvent<TAggregateId> source)
@@ -76,12 +75,12 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         var payload = _eventSerializer.Serialize(source.Payload);
 
         return new EventData<TAggregateId>(
-            source.Metadata.EventId,
-            source.Metadata.DateTime.ToUniversalTime(),
-            source.Metadata.EventName,
-            source.Metadata.AggregateId,
-            source.Metadata.AggregateName,
-            source.Metadata.EventIndex,
+            source.EventId,
+            source.DateTime.ToUniversalTime(),
+            source.EventName,
+            source.AggregateId,
+            source.AggregateName,
+            source.EventIndex,
             payload);
     }
 

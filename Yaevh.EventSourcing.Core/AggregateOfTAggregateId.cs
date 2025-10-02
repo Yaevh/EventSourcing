@@ -34,24 +34,20 @@ namespace Yaevh.EventSourcing.Core
 
         protected void RaiseEvent(IEventPayload @event, DateTimeOffset dateTime)
         {
-            var metadata = DefaultEventMetadata<TAggregateId>.Create(this, @event, dateTime);
-            RaiseEvent(@event, metadata);
-        }
+            var aggregateEvent = new AggregateEvent<TAggregateId>(this, MassTransit.NewId.NextSequentialGuid(), @event, dateTime);
 
-        protected void RaiseEvent(IEventPayload @event, IEventMetadata<TAggregateId> metadata)
-        {
-            var aggregateEvent = new AggregateEvent<TAggregateId>(@event, metadata);
             _uncommittedEvents.Add(aggregateEvent);
             ++Version;
             Apply(aggregateEvent);
         }
 
+
         public void Load(IEnumerable<AggregateEvent<TAggregateId>> events)
         {
             foreach (var @event in events)
             {
-                if (@event.Metadata.EventIndex != Version + 1)
-                    throw new InvalidOperationException($"Event index {@event.Metadata.EventIndex} is out of order. Current version is {Version}.");
+                if (@event.EventIndex != Version + 1)
+                    throw new InvalidOperationException($"Event index {@event.EventIndex} is out of order. Current version is {Version}.");
                 ++Version;
                 Apply(@event);
                 _committedEvents.Add(@event);

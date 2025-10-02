@@ -68,12 +68,12 @@ namespace Yaevh.EventSourcing.SQLite
                 foreach (var @event in events)
                 {
                     var parameters = new {
-                        DateTime = @event.Metadata.DateTime,
-                        EventId = @event.Metadata.EventId,
-                        EventName = @event.Metadata.EventName,
-                        AggregateId = _aggregateIdSerializer.Serialize(@event.Metadata.AggregateId),
-                        AggregateName = @event.Metadata.AggregateName,
-                        EventIndex = @event.Metadata.EventIndex,
+                        DateTime = @event.DateTime,
+                        EventId = @event.EventId,
+                        EventName = @event.EventName,
+                        AggregateId = _aggregateIdSerializer.Serialize(@event.AggregateId),
+                        AggregateName = @event.AggregateName,
+                        EventIndex = @event.EventIndex,
                         Payload = _eventSerializer.Serialize(@event.Payload)
                     };
                     var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
@@ -115,19 +115,18 @@ namespace Yaevh.EventSourcing.SQLite
 
         private AggregateEvent<TAggregateId> ParseToDomainEvent(EventData source)
         {
-            var metadata = new DefaultEventMetadata<TAggregateId>(
-                DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture),
-                Guid.Parse(source.EventId),
-                source.EventName,
-                _aggregateIdSerializer.Deserialize(source.AggregateId),
-                source.AggregateName,
-                source.EventIndex);
-
-            var type = _typeCache.GetOrAdd(metadata.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
+            var type = _typeCache.GetOrAdd(source.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
 
             var @event = _eventSerializer.Deserialize(source.Payload, type) as IEventPayload;
 
-            return new AggregateEvent<TAggregateId>(@event, metadata);
+            return new AggregateEvent<TAggregateId>(
+                @event!,
+                source.AggregateName,
+                _aggregateIdSerializer.Deserialize(source.AggregateId),
+                source.EventName,
+                Guid.Parse(source.EventId),
+                source.EventIndex,
+                DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture));
         }
 
 

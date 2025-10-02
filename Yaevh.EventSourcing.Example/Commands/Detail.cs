@@ -63,9 +63,9 @@ public class Detail
             foreach (var @event in account.AllEvents)
             {
                 eventsTable.AddRow(
-                    @event.Metadata.EventIndex.ToString(),
-                    @event.Metadata.DateTime.ToString(),
-                    @event.Metadata.EventName.Substring(41, @event.Metadata.EventName.IndexOf(',') - 41),
+                    @event.EventIndex.ToString(),
+                    @event.DateTime.ToString(),
+                    @event.EventName.Substring(41, @event.EventName.IndexOf(',') - 41),
                     JsonSerializer.Serialize(@event.Payload, @event.Payload?.GetType(), new JsonSerializerOptions() {  WriteIndented = true })
                 );
             }

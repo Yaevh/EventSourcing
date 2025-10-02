@@ -31,7 +31,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                 if (events.Count == 0)
                     return Task.CompletedTask;
 
-                var key = events.First().Metadata.AggregateId;
+                var key = events.First().AggregateId;
                 _eventStorage[key] = events;
                 return Task.CompletedTask;
             }
@@ -129,32 +129,29 @@ namespace Yaevh.EventSourcing.Core.Tests
                 first => {
                     var @event = first.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("one");
-                    var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
-                    metadata.DateTime.Should().Be(now1);
-                    metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                    metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                    metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                    metadata.EventIndex.Should().Be(1);
+                    @event.DateTime.Should().Be(now1);
+                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.AggregateId.Should().Be(aggregate.AggregateId);
+                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.EventIndex.Should().Be(1);
                 },
                 second => {
                     var @event = second.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("two");
-                    var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
-                    metadata.DateTime.Should().Be(now2);
-                    metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                    metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                    metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                    metadata.EventIndex.Should().Be(2);
+                    @event.DateTime.Should().Be(now2);
+                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.AggregateId.Should().Be(aggregate.AggregateId);
+                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.EventIndex.Should().Be(2);
                 },
                 third => {
                     var @event = third.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("three");
-                    var metadata = @event.Metadata.Should().BeOfType<DefaultEventMetadata<Guid>>().Subject;
-                    metadata.DateTime.Should().Be(now3);
-                    metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                    metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                    metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                    metadata.EventIndex.Should().Be(3);
+                    @event.DateTime.Should().Be(now3);
+                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.AggregateId.Should().Be(aggregate.AggregateId);
+                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.EventIndex.Should().Be(3);
                 }
             );
         }

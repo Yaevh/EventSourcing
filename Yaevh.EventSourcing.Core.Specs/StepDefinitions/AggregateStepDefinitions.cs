@@ -83,7 +83,7 @@ namespace Yaevh.EventSourcing.Core.Specs.StepDefinitions
         public void ThenUncommittedEventShouldHaveProperAggregateId()
         {
             _aggregate.UncommittedEvents
-                .Select(x => x.Metadata.AggregateId)
+                .Select(x => x.AggregateId)
                 .Should().AllSatisfy(x =>
                     x.Should().Be(_aggregate.AggregateId));
         }

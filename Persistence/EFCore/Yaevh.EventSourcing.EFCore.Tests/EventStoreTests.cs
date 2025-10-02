@@ -100,42 +100,42 @@ public class EventStoreTests
             add => {
                 add.Payload.Should().BeOfType<CalculationAggregate.AdditionEvent>()
                     .Which.Value.Should().Be(5);
-                add.Metadata.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                add.Metadata.EventId.Should().NotBeEmpty();
-                add.Metadata.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
-                add.Metadata.AggregateId.Should().Be(aggregateId);
-                add.Metadata.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
-                add.Metadata.EventIndex.Should().Be(1);
+                add.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
+                add.EventId.Should().NotBeEmpty();
+                add.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
+                add.AggregateId.Should().Be(aggregateId);
+                add.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
+                add.EventIndex.Should().Be(1);
             },
             subtract => {
                 subtract.Payload.Should().BeOfType<CalculationAggregate.SubtractionEvent>()
                     .Which.Value.Should().Be(2);
-                subtract.Metadata.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                subtract.Metadata.EventId.Should().NotBeEmpty();
-                subtract.Metadata.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
-                subtract.Metadata.AggregateId.Should().Be(aggregateId);
-                subtract.Metadata.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
-                subtract.Metadata.EventIndex.Should().Be(2);
+                subtract.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
+                subtract.EventId.Should().NotBeEmpty();
+                subtract.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
+                subtract.AggregateId.Should().Be(aggregateId);
+                subtract.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
+                subtract.EventIndex.Should().Be(2);
             },
             multiply => {
                 multiply.Payload.Should().BeOfType<CalculationAggregate.MultiplicationEvent>()
                     .Which.Value.Should().Be(4);
-                multiply.Metadata.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                multiply.Metadata.EventId.Should().NotBeEmpty();
-                multiply.Metadata.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
-                multiply.Metadata.AggregateId.Should().Be(aggregateId);
-                multiply.Metadata.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
-                multiply.Metadata.EventIndex.Should().Be(3);
+                multiply.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
+                multiply.EventId.Should().NotBeEmpty();
+                multiply.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
+                multiply.AggregateId.Should().Be(aggregateId);
+                multiply.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
+                multiply.EventIndex.Should().Be(3);
             },
             divide => {
                 divide.Payload.Should().BeOfType<CalculationAggregate.DivisionEvent>()
                     .Which.Value.Should().Be(3);
-                divide.Metadata.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                divide.Metadata.EventId.Should().NotBeEmpty();
-                divide.Metadata.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
-                divide.Metadata.AggregateId.Should().Be(aggregateId);
-                divide.Metadata.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
-                divide.Metadata.EventIndex.Should().Be(4);
+                divide.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
+                divide.EventId.Should().NotBeEmpty();
+                divide.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
+                divide.AggregateId.Should().Be(aggregateId);
+                divide.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
+                divide.EventIndex.Should().Be(4);
             });
     }
 

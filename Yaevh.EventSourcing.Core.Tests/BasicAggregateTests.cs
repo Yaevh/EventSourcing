@@ -87,7 +87,7 @@ namespace Yaevh.EventSourcing.Core.Tests
             aggregate.DoSomething("trzy", DateTimeOffset.Now);
 
             aggregate.UncommittedEvents
-                .Select(x => x.Metadata.AggregateId)
+                .Select(x => x.AggregateId)
                 .Should().AllSatisfy(x => x.Should().Be(aggregate.AggregateId));
         }
 
@@ -108,32 +108,32 @@ namespace Yaevh.EventSourcing.Core.Tests
                     jeden => {
                         jeden.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("jeden");
-                        jeden.Metadata.DateTime.Should().Be(now1);
-                        jeden.Metadata.EventId.Should().NotBeEmpty();
-                        jeden.Metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                        jeden.Metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                        jeden.Metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                        jeden.Metadata.EventIndex.Should().Be(1);
+                        jeden.DateTime.Should().Be(now1);
+                        jeden.EventId.Should().NotBeEmpty();
+                        jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        jeden.AggregateId.Should().Be(aggregate.AggregateId);
+                        jeden.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                        jeden.EventIndex.Should().Be(1);
                     },
                     dwa => {
                         dwa.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("dwa");
-                        dwa.Metadata.DateTime.Should().Be(now2);
-                        dwa.Metadata.EventId.Should().NotBeEmpty();
-                        dwa.Metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                        dwa.Metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                        dwa.Metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                        dwa.Metadata.EventIndex.Should().Be(2);
+                        dwa.DateTime.Should().Be(now2);
+                        dwa.EventId.Should().NotBeEmpty();
+                        dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        dwa.AggregateId.Should().Be(aggregate.AggregateId);
+                        dwa.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                        dwa.EventIndex.Should().Be(2);
                     },
                     trzy => {
                         trzy.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                             .Which.Value.Should().Be("trzy");
-                        trzy.Metadata.DateTime.Should().Be(now3);
-                        trzy.Metadata.EventId.Should().NotBeEmpty();
-                        trzy.Metadata.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
-                        trzy.Metadata.AggregateId.Should().Be(aggregate.AggregateId);
-                        trzy.Metadata.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
-                        trzy.Metadata.EventIndex.Should().Be(3);
+                        trzy.DateTime.Should().Be(now3);
+                        trzy.EventId.Should().NotBeEmpty();
+                        trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        trzy.AggregateId.Should().Be(aggregate.AggregateId);
+                        trzy.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                        trzy.EventIndex.Should().Be(3);
                     }
                 );
         }
