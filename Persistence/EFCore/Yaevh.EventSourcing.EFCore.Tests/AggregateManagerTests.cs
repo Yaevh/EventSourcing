@@ -22,7 +22,7 @@ namespace Yaevh.EventSourcing.EFCore.Tests
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<TestDbContext>();
             dbContextOptionsBuilder.UseNpgsql(postgresContainer.GetConnectionString());
             var eventSerializer = new SystemTextJsonEventSerializer();
-            var dbContext = new TestDbContext(dbContextOptionsBuilder.Options, eventSerializer);
+            var dbContext = new TestDbContext(dbContextOptionsBuilder.Options);
             await dbContext.Database.MigrateAsync(token);
             var eventStore = new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer);
 

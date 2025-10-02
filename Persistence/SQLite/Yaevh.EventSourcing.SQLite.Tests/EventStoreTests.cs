@@ -50,7 +50,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             // Assert by querying the DB manually
             const string sql = @"
                 SELECT
-                    DateTime, EventId, EventName, AggregateId, AggregateName, EventIndex, Payload
+                    AggregateName, AggregateId, EventName, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
                 FROM Events
                 WHERE
                     AggregateId = @AggregateId

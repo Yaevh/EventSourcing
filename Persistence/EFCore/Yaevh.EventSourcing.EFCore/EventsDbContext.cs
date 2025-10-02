@@ -15,7 +15,7 @@ namespace Yaevh.EventSourcing.EFCore;
 public abstract class EventsDbContext<TAggregateId> : DbContext
     where TAggregateId : notnull
 {
-    public EventsDbContext(DbContextOptions options, IEventSerializer eventSerializer)
+    public EventsDbContext(DbContextOptions options)
         : base(options)
     {
         Events = Set<EventData<TAggregateId>>();

@@ -16,6 +16,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
     where TAggregateId : notnull
 {
     private static readonly ConcurrentDictionary<string, Type> _typeCache = new();
+    private static readonly ConcurrentDictionary<string, Type> _metadataTypeCache = new();
 
     private readonly TDbContext _dbContext;
     private readonly IEventSerializer _eventSerializer;
@@ -60,7 +61,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
         var @event = _eventSerializer.Deserialize(source.Payload, eventType) as IEventPayload;
 
-        return new AggregateEvent<TAggregateId>(
+        var aggregateEvent = new AggregateEvent<TAggregateId>(
             @event!,
             source.AggregateName,
             source.AggregateId,
@@ -68,20 +69,36 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
             source.EventId,
             source.EventIndex,
             source.DateTime.ToLocalTime());
+
+        if (source.MetadataType == null)
+            return aggregateEvent;
+
+        var metadataType = _metadataTypeCache.GetOrAdd(source.MetadataType, typeName => Type.GetType(typeName, throwOnError: true)!);
+        var metadata = _eventSerializer.Deserialize(source.Metadata, metadataType);
+
+        return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, source.MetadataType, metadata!);
     }
 
     internal EventData<TAggregateId> ToEventData(AggregateEvent<TAggregateId> source)
     {
         var payload = _eventSerializer.Serialize(source.Payload);
 
-        return new EventData<TAggregateId>(
-            source.EventId,
-            source.DateTime.ToUniversalTime(),
-            source.EventName,
-            source.AggregateId,
+        var eventData = new EventData<TAggregateId>(
             source.AggregateName,
+            source.AggregateId,
+            source.EventName,
+            source.EventId,
             source.EventIndex,
-            payload);
+            source.DateTime.ToUniversalTime(),
+            payload,
+            null, null);
+        if (source is AggregateEventWithMetadata<TAggregateId> withMetadata)
+            eventData = eventData with {
+                MetadataType = withMetadata.MetadataType,
+                Metadata = _eventSerializer.Serialize(withMetadata.Metadata)
+            };
+
+        return eventData;
     }
 
 }

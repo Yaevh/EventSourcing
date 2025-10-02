@@ -32,9 +32,11 @@ namespace Yaevh.EventSourcing.Core
         }
 
 
-        protected void RaiseEvent(IEventPayload @event, DateTimeOffset dateTime)
+        protected void RaiseEvent(IEventPayload @event, DateTimeOffset dateTime, object metadata = null)
         {
-            var aggregateEvent = new AggregateEvent<TAggregateId>(this, MassTransit.NewId.NextSequentialGuid(), @event, dateTime);
+            var aggregateEvent = metadata == null
+                ? new AggregateEvent<TAggregateId>(this, MassTransit.NewId.NextSequentialGuid(), @event, dateTime)
+                : new AggregateEventWithMetadata<TAggregateId>(this, MassTransit.NewId.NextSequentialGuid(), @event, dateTime, metadata);
 
             _uncommittedEvents.Add(aggregateEvent);
             ++Version;

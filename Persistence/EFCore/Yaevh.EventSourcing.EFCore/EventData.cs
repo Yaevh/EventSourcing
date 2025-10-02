@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 namespace Yaevh.EventSourcing.EFCore
 {
     public record EventData<TAggregateId>(
-        Guid EventId,
-        DateTimeOffset DateTime,
-        string EventName,
-        TAggregateId AggregateId,
         string AggregateName,
+        TAggregateId AggregateId,
+        string EventName,
+        Guid EventId,
         long EventIndex,
-        string Payload)
+        DateTimeOffset DateTime,
+        string Payload,
+        string? MetadataType,
+        string? Metadata)
         where TAggregateId : notnull;
 }

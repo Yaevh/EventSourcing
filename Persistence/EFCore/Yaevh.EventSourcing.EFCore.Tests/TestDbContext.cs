@@ -10,8 +10,8 @@ namespace Yaevh.EventSourcing.EFCore.Tests
 {
     public class TestDbContext : EventsDbContext<Guid>
     {
-        public TestDbContext(DbContextOptions options, IEventSerializer eventSerializer)
-            : base(options, eventSerializer)
+        public TestDbContext(DbContextOptions options)
+            : base(options)
         {
         }
     }

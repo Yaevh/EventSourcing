@@ -25,6 +25,8 @@ namespace Yaevh.EventSourcing.EFCore
                 b.Property(b => b.AggregateName);
                 b.Property(b => b.EventIndex);
                 b.Property(b => b.Payload);
+                b.Property(b => b.MetadataType).IsRequired(false);
+                b.Property(b => b.Metadata).IsRequired(false);
 
                 b.HasIndex(b => b.AggregateId);
                 b.HasIndex(e => new { e.AggregateId, e.EventIndex }).IsUnique();

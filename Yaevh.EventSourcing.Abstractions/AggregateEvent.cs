@@ -36,3 +36,46 @@ public record AggregateEvent<TAggregateId>(
         if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
     }
 }
+
+public record AggregateEventWithMetadata<TAggregateId>(
+    IEventPayload Payload,
+    string AggregateName,
+    TAggregateId AggregateId,
+    string EventName,
+    Guid EventId,
+    long EventIndex,
+    DateTimeOffset DateTime,
+    string MetadataType,
+    object Metadata
+) : AggregateEvent<TAggregateId>(Payload, AggregateName, AggregateId, EventName, EventId, EventIndex, DateTime)
+    where TAggregateId : notnull
+{
+    public AggregateEventWithMetadata(IAggregate<TAggregateId> aggregate, Guid eventId, IEventPayload payload, DateTimeOffset dateTime, object metadata)
+        : this(
+            payload,
+            aggregate.GetType().AssemblyQualifiedName!,
+            aggregate.AggregateId,
+            payload?.GetType().AssemblyQualifiedName!,
+            eventId,
+            aggregate.Version + 1,
+            dateTime,
+            metadata.GetType().AssemblyQualifiedName!,
+            metadata)
+    {
+        ArgumentNullException.ThrowIfNull(aggregate);
+        if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
+    }
+
+    public AggregateEventWithMetadata(AggregateEvent<TAggregateId> @event, string metadataType, object metadata)
+        : this(
+            @event.Payload,
+            @event.AggregateName,
+            @event.AggregateId,
+            @event.EventName,
+            @event.EventId,
+            @event.EventIndex,
+            @event.DateTime,
+            MetadataType: metadataType,
+            Metadata: metadata)
+    { }
+}
