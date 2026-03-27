@@ -6,8 +6,8 @@ public static class EventDispatcher
     /// Dispatches a collection of committed aggregate events to their respective handlers.
     /// </summary>
     /// <remarks>This method resolves all event handlers for each event type using the provided <paramref
-    /// name="serviceProvider"/>  and invokes their <c>Handle</c> method asynchronously. If no handlers are registered
-    /// for a specific event type,  the event is ignored. The method processes events sequentially and invokes all
+    /// name="serviceProvider"/> and invokes their <c>Handle</c> method asynchronously. If no handlers are registered
+    /// for a specific event type, the event is ignored. The method processes events sequentially and invokes all
     /// handlers for each event.</remarks>
     /// <typeparam name="TAggegate">The type of the aggregate associated with the events.</typeparam>
     /// <typeparam name="TAggregateId">The type of the aggregate identifier.</typeparam>

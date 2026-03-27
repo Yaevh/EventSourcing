@@ -50,6 +50,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
         await _dbContext.Events.AddRangeAsync(events.Select(@event => ToEventData(@event)), cancellationToken);
     }
+
     public async Task<IEnumerable<TAggregateId>> GetAllAggregateIdsAsync(CancellationToken cancellationToken)
     {
         return await _dbContext.Events.Select(e => e.AggregateId).Distinct().ToListAsync(cancellationToken);

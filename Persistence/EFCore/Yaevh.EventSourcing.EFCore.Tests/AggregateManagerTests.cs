@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using System.Collections.Generic;
 using System.Threading;
 using Testcontainers.PostgreSql;
@@ -17,8 +18,22 @@ namespace Yaevh.EventSourcing.EFCore.Tests
             // Arrange
             var token = CancellationToken.None;
 
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            cts.CancelAfter(TimeSpan.FromSeconds(60)); // configurable timeout
+
+
+            // TODO use Testcontainers to start a PostgreSQL container for testing
             await using var postgresContainer = new PostgreSqlBuilder().Build();
-            await postgresContainer.StartAsync(token);
+            try
+            {
+                await postgresContainer.StartAsync(cts.Token)
+                    .WaitAsync(TimeSpan.FromSeconds(60), cts.Token);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to start the PostgreSQL test container. Ensure Docker is running and accessible.", ex);
+            }
+
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<TestDbContext>();
             dbContextOptionsBuilder.UseNpgsql(postgresContainer.GetConnectionString());
             var eventSerializer = new SystemTextJsonEventSerializer();

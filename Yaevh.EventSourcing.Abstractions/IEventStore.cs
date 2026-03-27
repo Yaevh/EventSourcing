@@ -31,6 +31,8 @@ namespace Yaevh.EventSourcing
         /// <param name="events"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
+        //
+        // TODO: return the largest EventId stored?
         Task StoreAsync(
             IReadOnlyList<AggregateEvent<TAggregateId>> events,
             CancellationToken cancellationToken);

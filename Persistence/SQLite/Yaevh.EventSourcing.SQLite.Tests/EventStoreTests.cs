@@ -64,7 +64,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 jeden => {
                     jeden.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
                     DateTimeOffset.Parse(jeden.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now1);
-                    jeden.EventId.Should().NotBeEmpty();
+                    jeden.EventId.Should().Be(1);
                     jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     jeden.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                     jeden.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
@@ -73,7 +73,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 dwa => {
                     dwa.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
                     DateTimeOffset.Parse(dwa.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now2);
-                    dwa.EventId.Should().NotBeEmpty();
+                    dwa.EventId.Should().Be(2);
                     dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     dwa.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                     dwa.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
@@ -82,7 +82,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 trzy => {
                     trzy.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
                     DateTimeOffset.Parse(trzy.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now3);
-                    trzy.EventId.Should().NotBeEmpty();
+                    trzy.EventId.Should().Be(3);
                     trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     trzy.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                     trzy.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
@@ -119,7 +119,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     jeden.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("jeden");
                     jeden.DateTime.Should().Be(now1);
-                    jeden.EventId.Should().NotBeEmpty();
+                    jeden.EventId.Should().Be(1);
                     jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     jeden.AggregateId.Should().Be(aggregate.AggregateId);
                     jeden.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
@@ -129,7 +129,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     dwa.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("dwa");
                     dwa.DateTime.Should().Be(now2);
-                    dwa.EventId.Should().NotBeEmpty();
+                    dwa.EventId.Should().Be(2);
                     dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     dwa.AggregateId.Should().Be(aggregate.AggregateId);
                     dwa.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
@@ -139,7 +139,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     trzy.Payload.Should().BeOfType<BasicAggregate.BasicEvent>()
                         .Which.Value.Should().Be("trzy");
                     trzy.DateTime.Should().Be(now3);
-                    trzy.EventId.Should().NotBeEmpty();
+                    trzy.EventId.Should().Be(3);
                     trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     trzy.AggregateId.Should().Be(aggregate.AggregateId);
                     trzy.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
