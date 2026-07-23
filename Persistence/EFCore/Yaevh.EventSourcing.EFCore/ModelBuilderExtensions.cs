@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Yaevh.EventSourcing.EFCore
 {
@@ -18,6 +13,7 @@ namespace Yaevh.EventSourcing.EFCore
             modelBuilder.Entity<EventData<TAggregateId>>(b => {
                 b.ToTable("Events");
                 b.HasKey(b => b.EventId);
+                b.Property(b => b.EventId).ValueGeneratedOnAdd();
 
                 b.Property(b => b.DateTime);
                 b.Property(b => b.EventName);

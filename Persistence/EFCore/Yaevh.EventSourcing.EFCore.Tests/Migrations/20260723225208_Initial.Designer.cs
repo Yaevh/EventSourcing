@@ -12,8 +12,8 @@ using Yaevh.EventSourcing.EFCore.Tests;
 namespace Yaevh.EventSourcing.EFCore.Tests.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20251002171549_EventMetadata")]
-    partial class EventMetadata
+    [Migration("20260723225208_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace Yaevh.EventSourcing.EFCore.Tests.Migrations
 
             modelBuilder.Entity("Yaevh.EventSourcing.EFCore.EventData<System.Guid>", b =>
                 {
-                    b.Property<Guid>("EventId")
+                    b.Property<long>("EventId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EventId"));
 
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");

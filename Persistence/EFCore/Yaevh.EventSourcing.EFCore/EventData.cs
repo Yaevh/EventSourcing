@@ -10,7 +10,7 @@ namespace Yaevh.EventSourcing.EFCore
         string AggregateName,
         TAggregateId AggregateId,
         string EventName,
-        Guid EventId,
+        long EventId,
         long EventIndex,
         DateTimeOffset DateTime,
         string Payload,

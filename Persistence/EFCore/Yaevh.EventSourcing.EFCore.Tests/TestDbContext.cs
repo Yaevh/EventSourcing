@@ -1,18 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Yaevh.EventSourcing.Persistence;
+using Microsoft.EntityFrameworkCore.Design;
 
-namespace Yaevh.EventSourcing.EFCore.Tests
+namespace Yaevh.EventSourcing.EFCore.Tests;
+
+public class TestDbContext : EventsDbContext<Guid>
 {
-    public class TestDbContext : EventsDbContext<Guid>
+    public TestDbContext(DbContextOptions<TestDbContext> options)
+        : base(options)
     {
-        public TestDbContext(DbContextOptions options)
-            : base(options)
+    }
+
+    public class TestDbContextFactory : IDesignTimeDbContextFactory<TestDbContext>
+    {
+        public TestDbContext CreateDbContext(string[] args)
         {
+            var options = new DbContextOptionsBuilder<TestDbContext>()
+                .UseNpgsql("Host=localhost;Database=test;Username=postgres;Password=postgres")
+                .Options;
+
+            return new TestDbContext(options);
         }
     }
 }

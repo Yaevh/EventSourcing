@@ -24,9 +24,11 @@ namespace Yaevh.EventSourcing.EFCore.Tests.Migrations
 
             modelBuilder.Entity("Yaevh.EventSourcing.EFCore.EventData<System.Guid>", b =>
                 {
-                    b.Property<Guid>("EventId")
+                    b.Property<long>("EventId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EventId"));
 
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");

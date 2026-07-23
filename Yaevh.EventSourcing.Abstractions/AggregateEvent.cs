@@ -16,19 +16,19 @@ public record AggregateEvent<TAggregateId>(
     string AggregateName,
     TAggregateId AggregateId,
     string EventName,
-    Guid EventId,
+    long EventId,
     long EventIndex,
     DateTimeOffset DateTime
 )
     where TAggregateId : notnull
 {
-    public AggregateEvent(IAggregate<TAggregateId> aggregate, Guid eventId, IEventPayload payload, DateTimeOffset dateTime)
+    public AggregateEvent(IAggregate<TAggregateId> aggregate, IEventPayload payload, DateTimeOffset dateTime)
         : this(
             payload,
             aggregate.GetType().AssemblyQualifiedName!,
             aggregate.AggregateId,
             payload?.GetType().AssemblyQualifiedName!,
-            eventId,
+            default,
             aggregate.Version + 1,
             dateTime)
     {
@@ -42,7 +42,7 @@ public record AggregateEventWithMetadata<TAggregateId>(
     string AggregateName,
     TAggregateId AggregateId,
     string EventName,
-    Guid EventId,
+    long EventId,
     long EventIndex,
     DateTimeOffset DateTime,
     string MetadataType,
@@ -50,13 +50,13 @@ public record AggregateEventWithMetadata<TAggregateId>(
 ) : AggregateEvent<TAggregateId>(Payload, AggregateName, AggregateId, EventName, EventId, EventIndex, DateTime)
     where TAggregateId : notnull
 {
-    public AggregateEventWithMetadata(IAggregate<TAggregateId> aggregate, Guid eventId, IEventPayload payload, DateTimeOffset dateTime, object metadata)
+    public AggregateEventWithMetadata(IAggregate<TAggregateId> aggregate, IEventPayload payload, DateTimeOffset dateTime, object metadata)
         : this(
             payload,
             aggregate.GetType().AssemblyQualifiedName!,
             aggregate.AggregateId,
             payload?.GetType().AssemblyQualifiedName!,
-            eventId,
+            default,
             aggregate.Version + 1,
             dateTime,
             metadata.GetType().AssemblyQualifiedName!,

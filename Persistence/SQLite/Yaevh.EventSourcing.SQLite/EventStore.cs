@@ -60,9 +60,9 @@ namespace Yaevh.EventSourcing.SQLite
             const string sql = @"
                 INSERT INTO
                     Events
-                        ( AggregateName,  AggregateId,  EventName,  EventId,  EventIndex,  DateTime,  Payload,  MetadataType,  Metadata)
+                        ( AggregateName,  AggregateId,  EventName,  EventIndex,  DateTime,  Payload,  MetadataType,  Metadata)
                     VALUES
-                        (@AggregateName, @AggregateId, @EventName, @EventId, @EventIndex, @DateTime, @Payload, @MetadataType, @Metadata);
+                        (@AggregateName, @AggregateId, @EventName, @EventIndex, @DateTime, @Payload, @MetadataType, @Metadata);
                 SELECT last_insert_rowid() FROM Events";
 
             using (var connection = _dbConnectionFactory.Invoke())
@@ -73,7 +73,6 @@ namespace Yaevh.EventSourcing.SQLite
                         AggregateName = @event.AggregateName,
                         AggregateId = _aggregateIdSerializer.Serialize(@event.AggregateId),
                         EventName = @event.EventName,
-                        EventId = @event.EventId,
                         EventIndex = @event.EventIndex,
                         DateTime = @event.DateTime,
                         Payload = _eventSerializer.Serialize(@event.Payload),
@@ -116,13 +115,13 @@ namespace Yaevh.EventSourcing.SQLite
                         AggregateName TEXT NOT NULL,
                         AggregateId TEXT NOT NULL,
                         EventName TEXT NOT NULL,
-                        EventId TEXT PRIMARY KEY NOT NULL,
+                        EventId INTEGER PRIMARY KEY,
                         EventIndex INT NOT NULL,
                         DateTime TEXT NOT NULL,
                         Payload TEXT NOT NULL,
                         MetadataType TEXT NULL,
                         Metadata TEXT NULL,
-                        UNIQUE(AggregateId, EventIndex)
+                        UNIQUE (AggregateId, EventIndex)
                     );
                     CREATE INDEX IF NOT EXISTS idx_Events_AggregateId ON Events(AggregateId);";
                 var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
@@ -142,7 +141,7 @@ namespace Yaevh.EventSourcing.SQLite
                 source.AggregateName,
                 _aggregateIdSerializer.Deserialize(source.AggregateId),
                 source.EventName,
-                Guid.Parse(source.EventId),
+                source.EventId,
                 source.EventIndex,
                 DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture));
 
@@ -160,7 +159,7 @@ namespace Yaevh.EventSourcing.SQLite
             string AggregateName,
             string AggregateId,
             string EventName,
-            string EventId,
+            long EventId,
             long EventIndex,
             string DateTime,
             string Payload,

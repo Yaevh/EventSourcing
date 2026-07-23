@@ -25,6 +25,7 @@ public class EventStoreTests
         // Arrange
         var token = CancellationToken.None;
 
+        // TODO use Testcontainers to start a PostgreSQL container for testing
         await using var postgresContainer = new PostgreSqlBuilder().Build();
         await postgresContainer.StartAsync(token);
         var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
@@ -72,6 +73,7 @@ public class EventStoreTests
         var now = DateTimeOffset.Now;
         var token = CancellationToken.None;
 
+        // TODO use Testcontainers to start a PostgreSQL container for testing
         await using var postgresContainer = new PostgreSqlBuilder().Build();
         await postgresContainer.StartAsync(token);
         var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
@@ -101,7 +103,7 @@ public class EventStoreTests
                 add.Payload.Should().BeOfType<CalculationAggregate.AdditionEvent>()
                     .Which.Value.Should().Be(5);
                 add.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                add.EventId.Should().NotBeEmpty();
+                add.EventId.Should().Be(1);
                 add.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
                 add.AggregateId.Should().Be(aggregateId);
                 add.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
@@ -111,7 +113,7 @@ public class EventStoreTests
                 subtract.Payload.Should().BeOfType<CalculationAggregate.SubtractionEvent>()
                     .Which.Value.Should().Be(2);
                 subtract.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                subtract.EventId.Should().NotBeEmpty();
+                subtract.EventId.Should().Be(2);
                 subtract.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
                 subtract.AggregateId.Should().Be(aggregateId);
                 subtract.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
@@ -121,7 +123,7 @@ public class EventStoreTests
                 multiply.Payload.Should().BeOfType<CalculationAggregate.MultiplicationEvent>()
                     .Which.Value.Should().Be(4);
                 multiply.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                multiply.EventId.Should().NotBeEmpty();
+                multiply.EventId.Should().Be(3);
                 multiply.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
                 multiply.AggregateId.Should().Be(aggregateId);
                 multiply.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
@@ -131,7 +133,7 @@ public class EventStoreTests
                 divide.Payload.Should().BeOfType<CalculationAggregate.DivisionEvent>()
                     .Which.Value.Should().Be(3);
                 divide.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                divide.EventId.Should().NotBeEmpty();
+                divide.EventId.Should().Be(4);
                 divide.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
                 divide.AggregateId.Should().Be(aggregateId);
                 divide.AggregateName.Should().Be(typeof(CalculationAggregate).AssemblyQualifiedName);
