@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Yaevh.EventSourcing.EFCore.Tests.Migrations
+namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

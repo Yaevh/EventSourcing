@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Yaevh.EventSourcing.EFCore.Tests;
+namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
+//TODO add other DB providers for testing, e.g., SQL Server, SQLite, etc.
 public class TestDbContext : EventsDbContext<Guid>
 {
     public TestDbContext(DbContextOptions<TestDbContext> options)

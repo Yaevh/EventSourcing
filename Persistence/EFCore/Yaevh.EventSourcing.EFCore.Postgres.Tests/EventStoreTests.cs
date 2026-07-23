@@ -9,7 +9,7 @@ using Testcontainers.PostgreSql;
 using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
-namespace Yaevh.EventSourcing.EFCore.Tests;
+namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
 public class EventStoreTests
 {

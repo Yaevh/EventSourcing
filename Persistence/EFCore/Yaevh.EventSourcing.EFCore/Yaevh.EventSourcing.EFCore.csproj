@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\Yaevh.EventSourcing.Persistence\Yaevh.EventSourcing.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.Postgres.Tests" />
+  </ItemGroup>
+
 </Project>

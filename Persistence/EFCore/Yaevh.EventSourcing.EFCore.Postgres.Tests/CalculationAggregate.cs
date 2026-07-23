@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Yaevh.EventSourcing.Core;
 
-namespace Yaevh.EventSourcing.EFCore.Tests;
+namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
 public class CalculationAggregate : Aggregate<CalculationAggregate>
 {
