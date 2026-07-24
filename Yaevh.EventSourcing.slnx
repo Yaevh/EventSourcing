@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Persistence/">
+    <Project Path="Persistence/Yaevh.EventSourcing.Persistence/Yaevh.EventSourcing.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Persistence/EFCore/">
+    <Project Path="Persistence/EFCore/Yaevh.EventSourcing.EFCore.Postgres.Tests/Yaevh.EventSourcing.EFCore.Postgres.Tests.csproj" />
+    <Project Path="Persistence/EFCore/Yaevh.EventSourcing.EFCore/Yaevh.EventSourcing.EFCore.csproj" />
+  </Folder>
+  <Folder Name="/Persistence/SQLite/">
+    <Project Path="Persistence/SQLite/Yaevh.EventSourcing.SQLite.Tests/Yaevh.EventSourcing.SQLite.Tests.csproj" />
+    <Project Path="Persistence/SQLite/Yaevh.EventSourcing.SQLite/Yaevh.EventSourcing.SQLite.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="TODO.txt" />
+  </Folder>
+  <Project Path="Yaevh.EventSourcing.Abstractions/Yaevh.EventSourcing.Abstractions.csproj" />
+  <Project Path="Yaevh.EventSourcing.Core.Specs/Yaevh.EventSourcing.Core.Specs.csproj" />
+  <Project Path="Yaevh.EventSourcing.Core.Tests/Yaevh.EventSourcing.Core.Tests.csproj" />
+  <Project Path="Yaevh.EventSourcing.Core/Yaevh.EventSourcing.Core.csproj" />
+  <Project Path="Yaevh.EventSourcing.Example/Yaevh.EventSourcing.Example.csproj" />
+</Solution>
