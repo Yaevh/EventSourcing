@@ -1,71 +1,69 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Time.Testing;
-using System.Collections.Generic;
-using System.Threading;
-using Testcontainers.PostgreSql;
 using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
+
+[Collection("Postgres container collection")]
+public class AggregateManagerTests : IAsyncLifetime
 {
-    public class AggregateManagerTests
+    public PostgresFixture Postgres { get; }
+    public AggregateManagerTests(PostgresFixture fixture)
     {
-        [Fact(DisplayName = "Loaded aggregate should match the stored one")]
-        public async Task LoadedAggregateShouldMatchStoredOne()
-        {
-            // Arrange
-            var token = CancellationToken.None;
+        Postgres = fixture ?? throw new ArgumentNullException(nameof(fixture));
+    }
 
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            cts.CancelAfter(TimeSpan.FromSeconds(60)); // configurable timeout
+    public async Task InitializeAsync()
+    {
+        var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
+            .UseNpgsql(Postgres.ConnectionString).Options;
+        var dbContext = new TestDbContext(dbContextOptions);
+        await dbContext.Database.MigrateAsync(CancellationToken.None);
+        dbContext.Events.RemoveRange(dbContext.Events);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
 
-            // TODO use Testcontainers to start a PostgreSQL container for testing
-            await using var postgresContainer = new PostgreSqlBuilder().Build();
-            try
-            {
-                await postgresContainer.StartAsync(cts.Token)
-                    .WaitAsync(TimeSpan.FromSeconds(60), cts.Token);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Failed to start the PostgreSQL test container. Ensure Docker is running and accessible.", ex);
-            }
+    [Fact(DisplayName = "Loaded aggregate should match the stored one")]
+    public async Task LoadedAggregateShouldMatchStoredOne()
+    {
+        // Arrange
+        var token = CancellationToken.None;
+        
+        var eventSerializer = new SystemTextJsonEventSerializer();
+        var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
+            .UseNpgsql(Postgres.ConnectionString).Options;
+        var dbContext = new TestDbContext(dbContextOptions);
+        var eventStore = new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer);
 
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<TestDbContext>();
-            dbContextOptionsBuilder.UseNpgsql(postgresContainer.GetConnectionString());
-            var eventSerializer = new SystemTextJsonEventSerializer();
-            var dbContext = new TestDbContext(dbContextOptionsBuilder.Options);
-            await dbContext.Database.MigrateAsync(token);
-            var eventStore = new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer);
+        var aggregateId = Guid.NewGuid();
+        var aggregate = new CalculationAggregate(aggregateId);
+        aggregate.Add(5);
+        aggregate.Subtract(2);
+        aggregate.Multiply(4);
+        aggregate.Divide(3);
 
-            var aggregateId = Guid.NewGuid();
-            var aggregate = new CalculationAggregate(aggregateId);
-            aggregate.Add(5);
-            aggregate.Subtract(2);
-            aggregate.Multiply(4);
-            aggregate.Divide(3);
+        var aggregateManager = new AggregateManager<CalculationAggregate, Guid>(
+            eventStore,
+            new DefaultAggregateFactory(),
+            new NullPublisher(),
+            new NullLogger<AggregateManager<CalculationAggregate, Guid>>());
 
-            var aggregateManager = new AggregateManager<CalculationAggregate, Guid>(
-                eventStore,
-                new DefaultAggregateFactory(),
-                new NullPublisher(),
-                new NullLogger<AggregateManager<CalculationAggregate, Guid>>());
+        await aggregateManager.CommitAsync(aggregate, token);
 
-            await aggregateManager.CommitAsync(aggregate, token);
+        await dbContext.SaveChangesAsync();
 
-            await dbContext.SaveChangesAsync();
+        // Act
+        var restoredAggregate = await aggregateManager.LoadAsync(aggregate.AggregateId, token);
 
-            // Act
-            var restoredAggregate = await aggregateManager.LoadAsync(aggregate.AggregateId, token);
-
-            // Assert
-            restoredAggregate.AggregateId.Should().Be(aggregate.AggregateId);
-            restoredAggregate.Version.Should().Be(aggregate.Version);
-            restoredAggregate.Value.Should().Be(aggregate.Value);
-            restoredAggregate.UncommittedEvents.Should().BeEmpty();
-        }
+        // Assert
+        restoredAggregate.AggregateId.Should().Be(aggregate.AggregateId);
+        restoredAggregate.Version.Should().Be(aggregate.Version);
+        restoredAggregate.Value.Should().Be(aggregate.Value);
+        restoredAggregate.UncommittedEvents.Should().BeEmpty();
     }
 }

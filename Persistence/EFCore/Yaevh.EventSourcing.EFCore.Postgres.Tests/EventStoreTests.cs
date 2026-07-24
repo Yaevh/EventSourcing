@@ -1,18 +1,29 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
-using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
-public class EventStoreTests
+[Collection("Postgres container collection")]
+public class EventStoreTests : IAsyncLifetime
 {
+    public PostgresFixture Postgres { get; }
+    public EventStoreTests(PostgresFixture fixture)
+    {
+        Postgres = fixture ?? throw new ArgumentNullException(nameof(fixture));
+    }
+
+    public async Task InitializeAsync()
+    {
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
+        dbContext.Events.RemoveRange(dbContext.Events);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+
     [Fact(DisplayName = "00. Basic aggregate sanity check")]
     public void AggregateSanityCheck()
     {
@@ -24,11 +35,7 @@ public class EventStoreTests
     {
         // Arrange
         var token = CancellationToken.None;
-
-        // TODO use Testcontainers to start a PostgreSQL container for testing
-        await using var postgresContainer = new PostgreSqlBuilder().Build();
-        await postgresContainer.StartAsync(token);
-        var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
 
 
         // Act
@@ -72,12 +79,8 @@ public class EventStoreTests
         // Arrange
         var now = DateTimeOffset.Now;
         var token = CancellationToken.None;
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
 
-        // TODO use Testcontainers to start a PostgreSQL container for testing
-        await using var postgresContainer = new PostgreSqlBuilder().Build();
-        await postgresContainer.StartAsync(token);
-        var (dbContext, eventStore) = await BuildDbContextAndEventStore(postgresContainer);
-        
         var aggregateId = Guid.NewGuid();
         var aggregate = new CalculationAggregate(aggregateId);
         aggregate.Add(5);
@@ -162,16 +165,17 @@ public class EventStoreTests
         return aggregate;
     }
 
-    private async Task<(TestDbContext, DbContextEventStore<TestDbContext, Guid>)>
+    private static async Task<(TestDbContext, DbContextEventStore<TestDbContext, Guid>)>
         BuildDbContextAndEventStore(PostgreSqlContainer postgresContainer)
     {
         var token = CancellationToken.None;
 
-        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TestDbContext>();
-        dbContextOptionsBuilder.UseNpgsql(postgresContainer.GetConnectionString());
-        var eventSerializer = new SystemTextJsonEventSerializer();
-        var dbContext = new TestDbContext(dbContextOptionsBuilder.Options);
+        var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
+            .UseNpgsql(postgresContainer.GetConnectionString()).Options;
+        var dbContext = new TestDbContext(dbContextOptions);
         await dbContext.Database.MigrateAsync(token);
+
+        var eventSerializer = new SystemTextJsonEventSerializer();
 
         return (dbContext, new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer));
     }
