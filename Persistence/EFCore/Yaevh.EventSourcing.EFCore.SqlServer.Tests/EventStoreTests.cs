@@ -1,22 +1,22 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Testcontainers.PostgreSql;
+using Testcontainers.MsSql;
 using Yaevh.EventSourcing.Persistence;
 
-namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
+namespace Yaevh.EventSourcing.EFCore.SqlServer.Tests;
 
-[Collection("Postgres container collection")]
+[Collection("MsSql container collection")]
 public class EventStoreTests : IAsyncLifetime
 {
-    public PostgresFixture Postgres { get; }
-    public EventStoreTests(PostgresFixture fixture)
+    public MsSqlFixture MsSql { get; }
+    public EventStoreTests(MsSqlFixture fixture)
     {
-        Postgres = fixture ?? throw new ArgumentNullException(nameof(fixture));
+        MsSql = fixture ?? throw new ArgumentNullException(nameof(fixture));
     }
 
     public async Task InitializeAsync()
     {
-        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(MsSql.Container);
         dbContext.Events.RemoveRange(dbContext.Events);
         await dbContext.SaveChangesAsync(CancellationToken.None);
     }
@@ -35,7 +35,7 @@ public class EventStoreTests : IAsyncLifetime
     {
         // Arrange
         var token = CancellationToken.None;
-        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(MsSql.Container);
 
 
         // Act
@@ -79,7 +79,7 @@ public class EventStoreTests : IAsyncLifetime
         // Arrange
         var now = DateTimeOffset.Now;
         var token = CancellationToken.None;
-        var (dbContext, eventStore) = await BuildDbContextAndEventStore(Postgres.Container);
+        var (dbContext, eventStore) = await BuildDbContextAndEventStore(MsSql.Container);
 
         var aggregateId = Guid.NewGuid();
         var aggregate = new CalculationAggregate(aggregateId);
@@ -94,6 +94,7 @@ public class EventStoreTests : IAsyncLifetime
         dbContext.Events.Add(eventStore.ToEventData(aggregate.UncommittedEvents[3]));
 
         await dbContext.SaveChangesAsync(token);
+
 
         // Act
         var aggregateEvents = await eventStore.LoadAsync(aggregateId, token);
@@ -162,12 +163,12 @@ public class EventStoreTests : IAsyncLifetime
     }
 
     private static async Task<(TestDbContext, DbContextEventStore<TestDbContext, Guid>)>
-        BuildDbContextAndEventStore(PostgreSqlContainer postgresContainer)
+        BuildDbContextAndEventStore(MsSqlContainer MsSqlContainer)
     {
         var token = CancellationToken.None;
 
         var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
-            .UseNpgsql(postgresContainer.GetConnectionString()).Options;
+            .UseSqlServer(MsSqlContainer.GetConnectionString()).Options;
         var dbContext = new TestDbContext(dbContextOptions);
         await dbContext.Database.MigrateAsync(token);
 

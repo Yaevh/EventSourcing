@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/Persistence/EFCore/">
     <Project Path="Persistence/EFCore/Yaevh.EventSourcing.EFCore.Postgres.Tests/Yaevh.EventSourcing.EFCore.Postgres.Tests.csproj" />
+    <Project Path="Persistence/EFCore/Yaevh.EventSourcing.EFCore.SqlServer.Tests/Yaevh.EventSourcing.EFCore.SqlServer.Tests.csproj" />
     <Project Path="Persistence/EFCore/Yaevh.EventSourcing.EFCore/Yaevh.EventSourcing.EFCore.csproj" />
   </Folder>
   <Folder Name="/Persistence/SQLite/">
