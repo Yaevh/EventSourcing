@@ -1,8 +1,9 @@
 ﻿using Testcontainers.PostgreSql;
+using Yaevh.EventSourcing.EFCore.Tests;
 
 namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
-public class PostgresFixture : IAsyncLifetime
+public class PostgresFixture : IDatabaseFixture, IAsyncLifetime
 {
     public PostgreSqlContainer Container { get; } = new PostgreSqlBuilder()
             .WithImage("postgres:16")
@@ -19,7 +20,7 @@ public class PostgresFixture : IAsyncLifetime
     public async Task DisposeAsync() => await Container.DisposeAsync();
 }
 
-[CollectionDefinition("Postgres container collection")]
+[CollectionDefinition(nameof(PostgresFixture))]
 public class PostgresCollection : ICollectionFixture<PostgresFixture>
 {
     // This class has no code, and is never created. Its purpose is simply

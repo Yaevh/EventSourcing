@@ -1,8 +1,9 @@
 ﻿using Testcontainers.MsSql;
+using Yaevh.EventSourcing.EFCore.Tests;
 
 namespace Yaevh.EventSourcing.EFCore.SqlServer.Tests;
 
-public class MsSqlFixture : IAsyncLifetime
+public class MsSqlFixture : IDatabaseFixture, IAsyncLifetime
 {
     public MsSqlContainer Container { get; } = new MsSqlBuilder()
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
@@ -17,8 +18,8 @@ public class MsSqlFixture : IAsyncLifetime
     public async Task DisposeAsync() => await Container.DisposeAsync();
 }
 
-[CollectionDefinition("MsSql container collection")]
-public class MsSqlCollection : ICollectionFixture<MsSqlFixture>
+[CollectionDefinition(nameof(MsSqlFixture))]
+public class MsSqlFixtureCollection : ICollectionFixture<MsSqlFixture>
 {
     // This class has no code, and is never created. Its purpose is simply
     // to be the place to apply [CollectionDefinition] and all the

@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.Tests" />
     <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.SqlServer.Tests" />
     <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.Postgres.Tests" />
   </ItemGroup>

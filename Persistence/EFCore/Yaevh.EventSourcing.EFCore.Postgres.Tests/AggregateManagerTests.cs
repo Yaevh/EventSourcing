@@ -1,69 +1,25 @@
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
-using Yaevh.EventSourcing.Core;
-using Yaevh.EventSourcing.Persistence;
+using Yaevh.EventSourcing.EFCore.Tests;
 
 namespace Yaevh.EventSourcing.EFCore.Postgres.Tests;
 
-[Collection("Postgres container collection")]
-public class AggregateManagerTests : IAsyncLifetime
+[Collection(nameof(PostgresFixture))]
+public class AggregateManagerTests(PostgresFixture databaseFixture) : AggregateManagerTestBase(databaseFixture)
 {
-    public PostgresFixture Postgres { get; }
-    public AggregateManagerTests(PostgresFixture fixture)
-    {
-        Postgres = fixture ?? throw new ArgumentNullException(nameof(fixture));
-    }
-
-    public async Task InitializeAsync()
+    protected override async Task<TestDbContext> BuildDbContext(CancellationToken cancellationToken)
     {
         var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
-            .UseNpgsql(Postgres.ConnectionString).Options;
+            .UseNpgsql(
+                DatabaseFixture.ConnectionString,
+                options => options.MigrationsAssembly(this.GetType().Assembly.FullName))
+            .Options;
         var dbContext = new TestDbContext(dbContextOptions);
-        await dbContext.Database.MigrateAsync(CancellationToken.None);
-        dbContext.Events.RemoveRange(dbContext.Events);
-        await dbContext.SaveChangesAsync(CancellationToken.None);
+        await dbContext.Database.MigrateAsync(cancellationToken);
+        return dbContext;
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
-
-
-    [Fact(DisplayName = "Loaded aggregate should match the stored one")]
-    public async Task LoadedAggregateShouldMatchStoredOne()
+    protected override async Task MigrateDbContext(TestDbContext dbContext, CancellationToken cancellationToken)
     {
-        // Arrange
-        var token = CancellationToken.None;
-        
-        var eventSerializer = new SystemTextJsonEventSerializer();
-        var dbContextOptions = new DbContextOptionsBuilder<TestDbContext>()
-            .UseNpgsql(Postgres.ConnectionString).Options;
-        var dbContext = new TestDbContext(dbContextOptions);
-        var eventStore = new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer);
-
-        var aggregateId = Guid.NewGuid();
-        var aggregate = new CalculationAggregate(aggregateId);
-        aggregate.Add(5);
-        aggregate.Subtract(2);
-        aggregate.Multiply(4);
-        aggregate.Divide(3);
-
-        var aggregateManager = new AggregateManager<CalculationAggregate, Guid>(
-            eventStore,
-            new DefaultAggregateFactory(),
-            new NullPublisher(),
-            new NullLogger<AggregateManager<CalculationAggregate, Guid>>());
-
-        await aggregateManager.CommitAsync(aggregate, token);
-
-        await dbContext.SaveChangesAsync();
-
-        // Act
-        var restoredAggregate = await aggregateManager.LoadAsync(aggregate.AggregateId, token);
-
-        // Assert
-        restoredAggregate.AggregateId.Should().Be(aggregate.AggregateId);
-        restoredAggregate.Version.Should().Be(aggregate.Version);
-        restoredAggregate.Value.Should().Be(aggregate.Value);
-        restoredAggregate.UncommittedEvents.Should().BeEmpty();
+        await dbContext.Database.MigrateAsync(cancellationToken);
     }
 }

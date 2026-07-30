@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yaevh.EventSourcing.EFCore.SqlServer.Tests;
+using Yaevh.EventSourcing.EFCore.Tests;
 
 #nullable disable
 

@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yaevh.EventSourcing.EFCore.Tests\Yaevh.EventSourcing.EFCore.Tests.csproj" />
     <ProjectReference Include="..\Yaevh.EventSourcing.EFCore\Yaevh.EventSourcing.EFCore.csproj" />
   </ItemGroup>
 
