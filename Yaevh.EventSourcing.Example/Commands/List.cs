@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
-using Yaevh.EventSourcing.Example.Model;
 using Yaevh.EventSourcing.Example.ReadModels;
 
 namespace Yaevh.EventSourcing.Example.Commands;

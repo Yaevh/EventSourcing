@@ -11,16 +11,12 @@ internal class Publisher : IPublisher
     }
 
 
-    public Task Publish<TAggegate, TAggregateId>(TAggegate aggegate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
-        where TAggegate : IAggregate<TAggregateId>
+    public async Task Publish<TAggregate, TAggregateId>(TAggregate aggregate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+        where TAggregate : IAggregate<TAggregateId>
         where TAggregateId : notnull
     {
-        _ = Task.Run(async () => {
-            using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
 
-            await EventDispatcher.DispatchEvent(aggegate, @event, scope.ServiceProvider, cancellationToken);
-        }, cancellationToken);
-
-        return Task.CompletedTask;
+        await EventDispatcher.DispatchEvent(aggregate, @event, scope.ServiceProvider, cancellationToken);
     }
 }

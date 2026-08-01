@@ -11,10 +11,10 @@ internal class AccountOpenedHandler : IAggregateEventHandler<AccountAggregate, A
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task Handle(AccountAggregate aggegate, AccountOpened @event, CancellationToken cancellationToken)
+    public async Task Handle(AccountAggregate aggregate, AccountOpened @event, CancellationToken cancellationToken)
     {
         var readModel = new BasicAccountReadModel { 
-            AccountNumber = aggegate.AccountNumber, 
+            AccountNumber = aggregate.AccountNumber, 
             OwnerName = @event.OwnerName,
             Balance = 0m,
             Currency = @event.Currency,

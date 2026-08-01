@@ -26,18 +26,20 @@ public class Withdraw
             var accountNumber = await AnsiConsole.PromptAsync(
                 new TextPrompt<string>("Enter account number")
                     .Validate(input => !string.IsNullOrWhiteSpace(input), "Account number cannot be empty")
-                    .Validate(input => input.Length <= 20, "Account number cannot be longer than 20 characters")
+                    .Validate(input => input.Length <= 20, "Account number cannot be longer than 20 characters"),
+                cancellationToken
             );
 
             var amount = await AnsiConsole.PromptAsync(
-                new TextPrompt<decimal>("Enter amount")
+                new TextPrompt<decimal>("Enter amount"), cancellationToken
             );
 
             var currencyCode = await AnsiConsole.PromptAsync(
                 new TextPrompt<string>("Enter currency code (e.g. USD, EUR)")
                     .Validate(input => !string.IsNullOrWhiteSpace(input), "Currency code cannot be empty")
                     .Validate(input => input.All(char.IsLetter), "Currency code must contain only letters")
-                    .WithConverter(input => input.ToUpperInvariant())
+                    .WithConverter(input => input.ToUpperInvariant()),
+                cancellationToken
             );
 
 

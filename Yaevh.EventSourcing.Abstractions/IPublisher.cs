@@ -12,8 +12,8 @@ namespace Yaevh.EventSourcing
     /// </summary>
     public interface IPublisher
     {
-        Task Publish<TAggegate, TAggregateId>(TAggegate aggegate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
-            where TAggegate : IAggregate<TAggregateId>
+        Task Publish<TAggregate, TAggregateId>(TAggregate aggregate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            where TAggregate : IAggregate<TAggregateId>
             where TAggregateId : notnull;
     }
 
@@ -23,8 +23,8 @@ namespace Yaevh.EventSourcing
     /// </summary>
     public class NullPublisher : IPublisher
     {
-        public Task Publish<TAggegate, TAggregateId>(TAggegate aggegate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
-            where TAggegate : IAggregate<TAggregateId>
+        public Task Publish<TAggregate, TAggregateId>(TAggregate aggregate, AggregateEvent<TAggregateId> @event, CancellationToken cancellationToken)
+            where TAggregate : IAggregate<TAggregateId>
             where TAggregateId : notnull
         {
             return Task.CompletedTask;

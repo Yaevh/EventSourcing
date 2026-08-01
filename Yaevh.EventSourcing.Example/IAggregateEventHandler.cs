@@ -2,10 +2,10 @@
 
 namespace Yaevh.EventSourcing.Example;
 
-public interface IAggregateEventHandler<TAggegate, TAggregateId, TEventPayload>
-    where TAggegate : IAggregate<TAggregateId>
+public interface IAggregateEventHandler<TAggregate, TAggregateId, TEventPayload>
+    where TAggregate : IAggregate<TAggregateId>
     where TAggregateId : notnull
     where TEventPayload : IEventPayload
 {
-    Task Handle(TAggegate aggegate, TEventPayload @event, CancellationToken cancellationToken);
+    Task Handle(TAggregate aggregate, TEventPayload @event, CancellationToken cancellationToken);
 }

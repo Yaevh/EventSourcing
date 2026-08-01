@@ -22,7 +22,8 @@ public class Close
         protected override async Task<Command> BuildCommand(CancellationToken cancellationToken)
         {
             var accountNumber = await AnsiConsole.PromptAsync(
-                new TextPrompt<string>("Enter account number")
+                new TextPrompt<string>("Enter account number"),
+                cancellationToken
             );
 
             return new Command {

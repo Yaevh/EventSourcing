@@ -53,11 +53,11 @@ public class RebuildReadModels
         }
 
 
-        public async Task RebuildAggregate<TAggegate, TAggregateId>(TAggegate aggegate, CancellationToken cancellationToken)
-            where TAggegate : IAggregate<TAggregateId>
+        public async Task RebuildAggregate<TAggregate, TAggregateId>(TAggregate aggregate, CancellationToken cancellationToken)
+            where TAggregate : IAggregate<TAggregateId>
             where TAggregateId : notnull
         {
-            await EventDispatcher.DispatchEvents(aggegate, aggegate.CommittedEvents, _serviceProvider, cancellationToken);
+            await EventDispatcher.DispatchEvents(aggregate, aggregate.CommittedEvents, _serviceProvider, cancellationToken);
         }
     }
 }

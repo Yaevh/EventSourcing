@@ -63,20 +63,20 @@ while (true)
                 .Replace("+Handler", string.Empty))
     );
 
+    if (command == typeof(Exit.Handler))
+        break;
+
     AnsiConsole.Clear();
 
+    using var sp = host.Services.CreateScope();
+    var commandHandler = (ICommandHandler)sp.ServiceProvider.GetRequiredService(command);
 
-    using (var sp = host.Services.CreateScope())
+    try
     {
-        var commandHandler = (ICommandHandler)sp.ServiceProvider.GetRequiredService(command);
-
-        try
-        {
-            await commandHandler.HandleAsync(CancellationToken.None);
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.MarkupLine($"[red]Error: {ex.Message}[/]");
-        }
+        await commandHandler.HandleAsync(CancellationToken.None);
+    }
+    catch (Exception ex)
+    {
+        AnsiConsole.MarkupLine($"[red]Error: {ex.Message}[/]");
     }
 }

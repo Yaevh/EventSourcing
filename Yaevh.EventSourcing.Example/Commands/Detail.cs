@@ -6,6 +6,8 @@ namespace Yaevh.EventSourcing.Example.Commands;
 
 public class Detail
 {
+    private static readonly JsonSerializerOptions _indentedJsonOptions = new JsonSerializerOptions { WriteIndented = true };
+
     public class Command
     {
         public required AccountNumber AccountNumber { get; init; }
@@ -19,13 +21,13 @@ public class Detail
             _aggregateManager = aggregateManager ?? throw new ArgumentNullException(nameof(aggregateManager));
         }
 
-
         protected override async Task<Command> BuildCommand(CancellationToken cancellationToken)
         {
             var accountNumber = await AnsiConsole.PromptAsync(
                 new TextPrompt<string>("Enter account number")
                     .Validate(input => !string.IsNullOrWhiteSpace(input), "Account number cannot be empty")
-                    .Validate(input => input.Length <= 20, "Account number cannot be longer than 20 characters")
+                    .Validate(input => input.Length <= 20, "Account number cannot be longer than 20 characters"),
+                cancellationToken
             );
 
             return new Command {
@@ -66,7 +68,7 @@ public class Detail
                     @event.EventIndex.ToString(),
                     @event.DateTime.ToString(),
                     @event.EventName.Substring(41, @event.EventName.IndexOf(',') - 41),
-                    JsonSerializer.Serialize(@event.Payload, @event.Payload?.GetType(), new JsonSerializerOptions() {  WriteIndented = true })
+                    JsonSerializer.Serialize(@event.Payload, @event.Payload?.GetType()!, _indentedJsonOptions)
                 );
             }
 

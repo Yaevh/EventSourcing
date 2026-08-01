@@ -1,7 +1,4 @@
-﻿using Spectre.Console;
-using Yaevh.EventSourcing.Example.Model;
-
-namespace Yaevh.EventSourcing.Example.Commands;
+﻿namespace Yaevh.EventSourcing.Example.Commands;
 
 public class Exit
 {
@@ -9,7 +6,8 @@ public class Exit
     {
         public Task HandleAsync(CancellationToken cancellationToken)
         {
-            Environment.Exit(0);
+            // this is basically just a marker class
+            //Environment.Exit(0);
 
             return Task.CompletedTask;
         }

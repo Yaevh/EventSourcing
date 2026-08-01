@@ -12,12 +12,12 @@ internal class MoneyWithdrawnHandler : IAggregateEventHandler<AccountAggregate, 
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task Handle(AccountAggregate aggegate, MoneyWithdrawn @event, CancellationToken cancellationToken)
+    public async Task Handle(AccountAggregate aggregate, MoneyWithdrawn @event, CancellationToken cancellationToken)
     {
-        var readModel = await _dbContext.ReadModels.SingleOrDefaultAsync(x => x.AccountNumber == aggegate.AccountNumber, cancellationToken);
+        var readModel = await _dbContext.ReadModels.SingleOrDefaultAsync(x => x.AccountNumber == aggregate.AccountNumber, cancellationToken);
 
         if (readModel is null)
-            throw new InvalidOperationException($"Read model for account {aggegate.AccountNumber} not found");
+            throw new InvalidOperationException($"Read model for account {aggregate.AccountNumber} not found");
 
         readModel.Balance -= @event.Amount;
         await _dbContext.SaveChangesAsync(cancellationToken);
