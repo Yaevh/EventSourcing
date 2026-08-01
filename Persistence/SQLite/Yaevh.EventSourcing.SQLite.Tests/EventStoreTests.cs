@@ -1,8 +1,5 @@
 using Dapper;
 using FluentAssertions;
-using System.Collections.Generic;
-using System.Threading;
-using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite.Tests

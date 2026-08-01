@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\Yaevh.EventSourcing.Persistence\Yaevh.EventSourcing.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Yaevh.EventSourcing.SQLite.Tests" />
+  </ItemGroup>
+
 </Project>

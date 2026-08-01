@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Yaevh.EventSourcing.Core\Yaevh.EventSourcing.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
 </Project>

@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace(".Abstractions", ""))</RootNamespace>
+    <NoWarn>$(NoWarn);IDE0130</NoWarn>
   </PropertyGroup>
 
 </Project>

@@ -28,4 +28,9 @@
     <ProjectReference Include="..\Yaevh.EventSourcing.Core\Yaevh.EventSourcing.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="FluentAssertions" />
+    <Using Include="TechTalk.SpecFlow" />
+  </ItemGroup>
+
 </Project>
