@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using System.Collections.Concurrent;
 using System.Data;
-using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite
@@ -65,29 +64,43 @@ namespace Yaevh.EventSourcing.SQLite
                         (@AggregateName, @AggregateId, @EventName, @EventIndex, @DateTime, @Payload, @MetadataType, @Metadata);
                 SELECT last_insert_rowid() FROM Events";
 
-            using (var connection = _dbConnectionFactory.Invoke())
+            using var connection = _dbConnectionFactory.Invoke();
+            IDbTransaction? transaction = null;
+            try
             {
-                foreach (var @event in events)
-                {
-                    var parameters = new {
-                        AggregateName = @event.AggregateName,
-                        AggregateId = _aggregateIdSerializer.Serialize(@event.AggregateId),
-                        EventName = @event.EventName,
-                        EventIndex = @event.EventIndex,
-                        DateTime = @event.DateTime,
-                        Payload = _eventSerializer.Serialize(@event.Payload),
-                        MetadataType = (string?)null,
-                        Metadata = (string?)null
-                    };
-                    if (@event is AggregateEventWithMetadata<TAggregateId> withMetadata)
-                        parameters = parameters with {
-                            MetadataType = withMetadata.Metadata.GetType().AssemblyQualifiedName,
-                            Metadata = _eventSerializer.Serialize(withMetadata.Metadata)
-                        };
+                transaction = connection.BeginTransaction();
 
-                    var command = new CommandDefinition(sql, parameters: parameters, cancellationToken: cancellationToken);
-                    await connection.ExecuteAsync(command);
-                }
+                var parameters = events
+                    .Select(@event => {
+                        var parameters = new {
+                            AggregateName = @event.AggregateName,
+                            AggregateId = _aggregateIdSerializer.Serialize(@event.AggregateId),
+                            EventName = @event.EventName,
+                            EventIndex = @event.EventIndex,
+                            DateTime = @event.DateTime,
+                            Payload = _eventSerializer.Serialize(@event.Payload),
+                            MetadataType = (string?)null,
+                            Metadata = (string?)null
+                        };
+                        if (@event is AggregateEventWithMetadata<TAggregateId> withMetadata)
+                            parameters = parameters with {
+                                MetadataType = withMetadata.Metadata.GetType().AssemblyQualifiedName,
+                                Metadata = _eventSerializer.Serialize(withMetadata.Metadata)
+                            };
+                        return parameters;
+                    })
+                    .ToList();
+
+                var command = new CommandDefinition(
+                    sql, parameters: parameters, transaction: transaction, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction?.Rollback();
+                throw;
             }
         }
 
