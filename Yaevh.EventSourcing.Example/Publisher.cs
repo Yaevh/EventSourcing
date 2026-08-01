@@ -1,6 +1,4 @@
-﻿
-using Microsoft.Extensions.DependencyInjection;
-using static System.Formats.Asn1.AsnWriter;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Yaevh.EventSourcing.Example;
 
