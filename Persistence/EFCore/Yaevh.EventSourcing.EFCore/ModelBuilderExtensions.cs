@@ -18,7 +18,7 @@ namespace Yaevh.EventSourcing.EFCore
                 b.Property(b => b.DateTime);
                 b.Property(b => b.EventName);
                 b.Property(b => b.AggregateId);
-                b.Property(b => b.AggregateName);
+                b.Property(b => b.AggregateType);
                 b.Property(b => b.EventIndex);
                 b.Property(b => b.Payload);
                 b.Property(b => b.MetadataType).IsRequired(false);

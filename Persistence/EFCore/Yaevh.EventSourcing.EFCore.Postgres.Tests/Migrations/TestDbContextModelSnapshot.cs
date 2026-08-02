@@ -33,7 +33,7 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AggregateName")
+                    b.Property<string>("AggregateType")
                         .IsRequired()
                         .HasColumnType("text");
 

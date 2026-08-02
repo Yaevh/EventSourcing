@@ -34,7 +34,7 @@ namespace Yaevh.EventSourcing.EFCore.SqlServer.Tests.Migrations
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AggregateName")
+                    b.Property<string>("AggregateType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

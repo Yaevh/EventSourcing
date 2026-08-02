@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.Data;
-using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.EFCore;
@@ -20,12 +19,15 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
     private readonly TDbContext _dbContext;
     private readonly IEventSerializer _eventSerializer;
+    private readonly IAggregateTypeNamingStrategy _aggregateNamingStrategy;
     public DbContextEventStore(
         TDbContext dbContext,
-        IEventSerializer eventSerializer)
+        IEventSerializer eventSerializer,
+        IAggregateTypeNamingStrategy aggregateNamingStrategy)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
+        _aggregateNamingStrategy = aggregateNamingStrategy ?? throw new ArgumentNullException(nameof(aggregateNamingStrategy));
     }
 
     
@@ -69,9 +71,11 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
         var @event = _eventSerializer.Deserialize(source.Payload, eventType) as IEventPayload;
 
+        var aggregateType = _aggregateNamingStrategy.FromUniqueName(source.AggregateType);
+
         var aggregateEvent = new AggregateEvent<TAggregateId>(
             @event!,
-            source.AggregateName,
+            aggregateType,
             source.AggregateId,
             source.EventName,
             source.EventId,
@@ -92,7 +96,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         var payload = _eventSerializer.Serialize(source.Payload);
 
         var eventData = new EventData<TAggregateId>(
-            source.AggregateName,
+            _aggregateNamingStrategy.ToUniqueName(source.AggregateType),
             source.AggregateId,
             source.EventName,
             source.EventId,

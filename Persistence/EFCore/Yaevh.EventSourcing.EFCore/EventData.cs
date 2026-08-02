@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yaevh.EventSourcing.EFCore
+﻿namespace Yaevh.EventSourcing.EFCore
 {
     public record EventData<TAggregateId>(
-        string AggregateName,
+        string AggregateType,
         TAggregateId AggregateId,
         string EventName,
         long EventId,

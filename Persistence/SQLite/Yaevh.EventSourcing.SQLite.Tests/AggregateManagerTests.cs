@@ -25,7 +25,11 @@ namespace Yaevh.EventSourcing.SQLite.Tests
             aggregate.DoSomething("dwa", now2);
             aggregate.DoSomething("trzy", now3);
 
-            var eventStore = new EventStore<Guid>(connectionFactory, eventSerializer, new GuidAggregateIdSerializer());
+            var eventStore = new EventStore<Guid>(
+                connectionFactory,
+                eventSerializer,
+                new GuidAggregateIdSerializer(),
+                new DefaultAggregateTypeNamingStrategy());
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
                 eventStore,
                 new DefaultAggregateFactory(),

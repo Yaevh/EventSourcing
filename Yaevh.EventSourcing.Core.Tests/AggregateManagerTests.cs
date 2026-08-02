@@ -132,7 +132,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     @event.DateTime.Should().Be(now1);
                     @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
-                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(1);
                 },
                 second => {
@@ -141,7 +141,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     @event.DateTime.Should().Be(now2);
                     @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
-                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(2);
                 },
                 third => {
@@ -150,7 +150,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     @event.DateTime.Should().Be(now3);
                     @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
-                    @event.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                    @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(3);
                 }
             );

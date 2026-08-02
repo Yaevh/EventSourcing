@@ -1,6 +1,7 @@
-﻿using Dapper;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Data;
+using System.Globalization;
+using Dapper;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite
@@ -15,14 +16,17 @@ namespace Yaevh.EventSourcing.SQLite
         private readonly Func<IDbConnection> _dbConnectionFactory;
         private readonly IEventSerializer _eventSerializer;
         private readonly IAggregateIdSerializer<TAggregateId> _aggregateIdSerializer;
+        private readonly IAggregateTypeNamingStrategy _aggregateNamingStrategy;
         public EventStore(
             Func<IDbConnection> dbConnectionFactory,
             IEventSerializer eventSerializer,
-            IAggregateIdSerializer<TAggregateId> aggregateIdSerializer)
+            IAggregateIdSerializer<TAggregateId> aggregateIdSerializer,
+            IAggregateTypeNamingStrategy aggregateNamingStrategy)
         {
             _dbConnectionFactory = dbConnectionFactory ?? throw new ArgumentNullException(nameof(dbConnectionFactory));
             _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
             _aggregateIdSerializer = aggregateIdSerializer ?? throw new ArgumentNullException(nameof(aggregateIdSerializer));
+            _aggregateNamingStrategy = aggregateNamingStrategy ?? throw new ArgumentNullException(nameof(aggregateNamingStrategy));
         }
 
         public async Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(
@@ -36,7 +40,7 @@ namespace Yaevh.EventSourcing.SQLite
             {
                 const string sql = @"
                     SELECT
-                        AggregateName, AggregateId, EventName, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
+                        AggregateType, AggregateId, EventName, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
                     FROM Events
                     WHERE
                         AggregateId = @AggregateId
@@ -59,9 +63,9 @@ namespace Yaevh.EventSourcing.SQLite
             const string sql = @"
                 INSERT INTO
                     Events
-                        ( AggregateName,  AggregateId,  EventName,  EventIndex,  DateTime,  Payload,  MetadataType,  Metadata)
+                        ( AggregateType,  AggregateId,  EventName,  EventIndex,  DateTime,  Payload,  MetadataType,  Metadata)
                     VALUES
-                        (@AggregateName, @AggregateId, @EventName, @EventIndex, @DateTime, @Payload, @MetadataType, @Metadata);
+                        (@AggregateType, @AggregateId, @EventName, @EventIndex, @DateTime, @Payload, @MetadataType, @Metadata);
                 SELECT last_insert_rowid() FROM Events";
 
             using var connection = _dbConnectionFactory.Invoke();
@@ -73,7 +77,7 @@ namespace Yaevh.EventSourcing.SQLite
                 var parameters = events
                     .Select(@event => {
                         var parameters = new {
-                            AggregateName = @event.AggregateName,
+                            AggregateType =  _aggregateNamingStrategy.ToUniqueName(@event.AggregateType),
                             AggregateId = _aggregateIdSerializer.Serialize(@event.AggregateId),
                             EventName = @event.EventName,
                             EventIndex = @event.EventIndex,
@@ -125,7 +129,7 @@ namespace Yaevh.EventSourcing.SQLite
             {
                 const string sql = @"
                     CREATE TABLE IF NOT EXISTS Events (
-                        AggregateName TEXT NOT NULL,
+                        AggregateType TEXT NOT NULL,
                         AggregateId TEXT NOT NULL,
                         EventName TEXT NOT NULL,
                         EventId INTEGER PRIMARY KEY,
@@ -151,12 +155,12 @@ namespace Yaevh.EventSourcing.SQLite
 
             var aggregateEvent = new AggregateEvent<TAggregateId>(
                 @event!,
-                source.AggregateName,
+                _aggregateNamingStrategy.FromUniqueName(source.AggregateType),
                 _aggregateIdSerializer.Deserialize(source.AggregateId),
                 source.EventName,
                 source.EventId,
                 source.EventIndex,
-                DateTimeOffset.Parse(source.DateTime, System.Globalization.CultureInfo.InvariantCulture));
+                DateTimeOffset.Parse(source.DateTime, CultureInfo.InvariantCulture));
 
             if (source.MetadataType == null)
                 return aggregateEvent;
@@ -164,12 +168,12 @@ namespace Yaevh.EventSourcing.SQLite
             var metadataType = _metadataTypeCache.GetOrAdd(source.MetadataType, typeName => Type.GetType(typeName, throwOnError: true)!);
             var metadata = _eventSerializer.Deserialize(source.Metadata, metadataType);
 
-            return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, source.MetadataType, metadata!);
+            return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, source.MetadataType!, metadata!);
         }
 
 
         internal record EventData(
-            string AggregateName,
+            string AggregateType,
             string AggregateId,
             string EventName,
             long EventId,
