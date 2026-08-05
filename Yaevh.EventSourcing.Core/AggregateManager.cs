@@ -29,9 +29,9 @@ namespace Yaevh.EventSourcing.Core
             _logger.LogDebug("Trying to load aggregate with AggregateId = {AggregateId}", aggregateId);
             var aggregate = _aggregateFactory.Create<TAggregate, TAggregateId>(aggregateId);
             var events = await _store.LoadAsync(aggregateId, cancellationToken);
-            _logger.LogDebug("Found {EventCount} events for aggregate {AggregateType} with ID {AggregateId}, now loading", events.Count(), aggregate.GetType().FullName, aggregateId);
+            _logger.LogDebug("Found {EventCount} events for aggregate {AggregateName} with ID {AggregateId}, now loading", events.Count(), aggregate.GetType().FullName, aggregateId);
             aggregate.Load(events);
-            _logger.LogDebug("Loaded {EventCount} events for aggregate {AggregateType} with ID {AggregateId}", events.Count(), aggregate.GetType().FullName, aggregateId);
+            _logger.LogDebug("Loaded {EventCount} events for aggregate {AggregateName} with ID {AggregateId}", events.Count(), aggregate.GetType().FullName, aggregateId);
             return aggregate;
         }
 

@@ -18,9 +18,9 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                 {
                     EventId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AggregateType = table.Column<string>(type: "text", nullable: false),
+                    AggregateName = table.Column<string>(type: "text", nullable: false),
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventType = table.Column<string>(type: "text", nullable: false),
+                    EventName = table.Column<string>(type: "text", nullable: false),
                     EventIndex = table.Column<long>(type: "bigint", nullable: false),
                     DateTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Payload = table.Column<string>(type: "text", nullable: false),

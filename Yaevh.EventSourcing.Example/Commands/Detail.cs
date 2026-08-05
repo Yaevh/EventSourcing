@@ -67,7 +67,7 @@ public class Detail
                 eventsTable.AddRow(
                     @event.EventIndex.ToString(),
                     @event.DateTime.ToString(),
-                    @event.EventName.Substring(41, @event.EventName.IndexOf(',') - 41),
+                    @event.EventType.FullName.Substring(41, @event.EventType.FullName.IndexOf(',') - 41),
                     JsonSerializer.Serialize(@event.Payload, @event.Payload?.GetType()!, _indentedJsonOptions)
                 );
             }

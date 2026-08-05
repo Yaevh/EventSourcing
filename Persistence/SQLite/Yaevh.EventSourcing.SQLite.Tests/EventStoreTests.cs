@@ -59,7 +59,7 @@ public class EventStoreTests
         // Assert by querying the DB manually
         const string sql = @"
                 SELECT
-                    AggregateType, AggregateId, EventType, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
+                    AggregateName, AggregateId, EventName, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
                 FROM Events
                 WHERE
                     AggregateId = @AggregateId
@@ -74,27 +74,27 @@ public class EventStoreTests
                 jeden.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
                 DateTimeOffset.Parse(jeden.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now1);
                 jeden.EventId.Should().Be(1);
-                jeden.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 jeden.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
-                jeden.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                jeden.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 jeden.EventIndex.Should().Be(1);
             },
             dwa => {
                 dwa.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
                 DateTimeOffset.Parse(dwa.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now2);
                 dwa.EventId.Should().Be(2);
-                dwa.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 dwa.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
-                dwa.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                dwa.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 dwa.EventIndex.Should().Be(2);
             },
             trzy => {
                 trzy.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
                 DateTimeOffset.Parse(trzy.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now3);
                 trzy.EventId.Should().Be(3);
-                trzy.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 trzy.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
-                trzy.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
+                trzy.AggregateName.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 trzy.EventIndex.Should().Be(3);
             });
     }

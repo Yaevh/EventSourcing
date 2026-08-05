@@ -53,19 +53,19 @@ public abstract class EventStoreTestBase : IAsyncLifetime
         events.Should().SatisfyRespectively(
             first => {
                 first.EventIndex.Should().Be(1);
-                first.EventType.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
+                first.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
             },
             second => {
                 second.EventIndex.Should().Be(2);
-                second.EventType.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
+                second.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
             },
             third => {
                 third.EventIndex.Should().Be(3);
-                third.EventType.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
+                third.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
             },
             fourth => {
                 fourth.EventIndex.Should().Be(4);
-                fourth.EventType.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
+                fourth.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
             });
     }
 

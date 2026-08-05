@@ -33,7 +33,7 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AggregateType")
+                    b.Property<string>("AggregateName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -43,7 +43,7 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                     b.Property<long>("EventIndex")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("EventType")
+                    b.Property<string>("EventName")
                         .IsRequired()
                         .HasColumnType("text");
 

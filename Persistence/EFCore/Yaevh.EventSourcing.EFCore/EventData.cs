@@ -1,9 +1,9 @@
 ﻿namespace Yaevh.EventSourcing.EFCore
 {
     public record EventData<TAggregateId>(
-        string AggregateType,
+        string AggregateName,
         TAggregateId AggregateId,
-        string EventType,
+        string EventName,
         long EventId,
         long EventIndex,
         DateTimeOffset DateTime,

@@ -33,7 +33,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         _eventNamingStrategy = eventNamingStrategy ?? throw new ArgumentNullException(nameof(eventNamingStrategy));
     }
 
-    
+
     public async Task<IEnumerable<AggregateEvent<TAggregateId>>> LoadAsync(
         TAggregateId aggregateId, CancellationToken cancellationToken)
     {
@@ -70,11 +70,9 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
     internal AggregateEvent<TAggregateId> ToAggregateEvent(EventData<TAggregateId> source)
     {
-        var eventType = _eventTypeCache.GetOrAdd(source.EventType, _eventNamingStrategy.FromUniqueName);
-
+        var aggregateType = _aggregateTypeCache.GetOrAdd(source.AggregateName, _aggregateNamingStrategy.FromUniqueName);
+        var eventType = _eventTypeCache.GetOrAdd(source.EventName, _eventNamingStrategy.FromUniqueName);
         var @event = _eventSerializer.Deserialize(source.Payload, eventType) as IEventPayload;
-
-        var aggregateType = _aggregateTypeCache.GetOrAdd(source.AggregateType, _aggregateNamingStrategy.FromUniqueName);
 
         var aggregateEvent = new AggregateEvent<TAggregateId>(
             @event!,

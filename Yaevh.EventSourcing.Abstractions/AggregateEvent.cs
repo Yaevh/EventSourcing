@@ -34,7 +34,8 @@ public record AggregateEvent<TAggregateId>(
             dateTime)
     {
         ArgumentNullException.ThrowIfNull(aggregate);
-        if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
+        if (dateTime == default)
+            throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
     }
 }
 
