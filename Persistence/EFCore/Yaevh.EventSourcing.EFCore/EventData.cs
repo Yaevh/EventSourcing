@@ -3,7 +3,7 @@
     public record EventData<TAggregateId>(
         string AggregateType,
         TAggregateId AggregateId,
-        string EventName,
+        string EventType,
         long EventId,
         long EventIndex,
         DateTimeOffset DateTime,

@@ -130,7 +130,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     var @event = first.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("one");
                     @event.DateTime.Should().Be(now1);
-                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
                     @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(1);
@@ -139,7 +139,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     var @event = second.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("two");
                     @event.DateTime.Should().Be(now2);
-                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
                     @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(2);
@@ -148,7 +148,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                     var @event = third.Should().BeOfType<AggregateEvent<Guid>>().Subject;
                     @event.Payload.Should().BeOfType<BasicAggregate.BasicEvent>().Which.Value.Should().Be("three");
                     @event.DateTime.Should().Be(now3);
-                    @event.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                    @event.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                     @event.AggregateId.Should().Be(aggregate.AggregateId);
                     @event.AggregateType.Should().Be(typeof(BasicAggregate));
                     @event.EventIndex.Should().Be(3);

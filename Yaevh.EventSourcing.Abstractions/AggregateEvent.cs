@@ -1,5 +1,7 @@
 ﻿namespace Yaevh.EventSourcing;
 
+using System;
+
 /// <summary>
 /// An event raised by an <see cref="IAggregate{TAggregateId}"/>, complete with its metadata.
 /// </summary>
@@ -8,27 +10,25 @@
 /// <param name="DateTime">The date and time the event was raised.</param>
 /// <param name="AggregateType">The CLR type of the aggregate this event belongs to.</param>
 /// <param name="AggregateId">Uniquely identifies the aggregate the event belongs to.</param>
-/// <param name="EventName">The name of the raised event.</param>
+/// <param name="EventType">The CLR type of the raised event.</param>
 /// <param name="EventId">Uniquely identifies the event this metadata belongs to.</param>
-/// <param name="EventIndex">The one-based index of the event with regard to the aggregate. That is, the ordinal number of the event in a given aggregate.</param>
-// TODO change EventName and EventMetadataName
+/// <param name="EventIndex">The one-based index of the event with regard to the aggregate.</param>
 public record AggregateEvent<TAggregateId>(
     IEventPayload Payload,
     Type AggregateType,
     TAggregateId AggregateId,
-    string EventName,
+    Type EventType,
     long EventId,
     long EventIndex,
     DateTimeOffset DateTime
-)
-    where TAggregateId : notnull
+) where TAggregateId : notnull
 {
     public AggregateEvent(IAggregate<TAggregateId> aggregate, IEventPayload payload, DateTimeOffset dateTime)
         : this(
             payload,
             aggregate.GetType(),
             aggregate.AggregateId,
-            payload?.GetType().AssemblyQualifiedName!,
+            payload?.GetType() ?? throw new ArgumentNullException(nameof(payload)),
             default,
             aggregate.Version + 1,
             dateTime)
@@ -42,13 +42,13 @@ public record AggregateEventWithMetadata<TAggregateId>(
     IEventPayload Payload,
     Type AggregateType,
     TAggregateId AggregateId,
-    string EventName,
+    Type EventType,
     long EventId,
     long EventIndex,
     DateTimeOffset DateTime,
     string MetadataType,
     object Metadata
-) : AggregateEvent<TAggregateId>(Payload, AggregateType, AggregateId, EventName, EventId, EventIndex, DateTime)
+) : AggregateEvent<TAggregateId>(Payload, AggregateType, AggregateId, EventType, EventId, EventIndex, DateTime)
     where TAggregateId : notnull
 {
     public AggregateEventWithMetadata(IAggregate<TAggregateId> aggregate, IEventPayload payload, DateTimeOffset dateTime, object metadata)
@@ -56,7 +56,7 @@ public record AggregateEventWithMetadata<TAggregateId>(
             payload,
             aggregate.GetType(),
             aggregate.AggregateId,
-            payload?.GetType().AssemblyQualifiedName!,
+            payload?.GetType() ?? throw new ArgumentNullException(nameof(payload)),
             default,
             aggregate.Version + 1,
             dateTime,
@@ -72,7 +72,7 @@ public record AggregateEventWithMetadata<TAggregateId>(
             @event.Payload,
             @event.AggregateType,
             @event.AggregateId,
-            @event.EventName,
+            @event.EventType,
             @event.EventId,
             @event.EventIndex,
             @event.DateTime,

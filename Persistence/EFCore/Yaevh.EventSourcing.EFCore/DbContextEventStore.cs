@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
-using System.Data;
+﻿using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.EFCore;
@@ -14,20 +13,24 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
     where TDbContext : EventsDbContext<TAggregateId>
     where TAggregateId : notnull
 {
-    private static readonly ConcurrentDictionary<string, Type> _typeCache = new();
+    private static readonly ConcurrentDictionary<string, Type> _aggregateTypeCache = new();
+    private static readonly ConcurrentDictionary<string, Type> _eventTypeCache = new();
     private static readonly ConcurrentDictionary<string, Type> _metadataTypeCache = new();
 
     private readonly TDbContext _dbContext;
     private readonly IEventSerializer _eventSerializer;
     private readonly IAggregateTypeNamingStrategy _aggregateNamingStrategy;
+    private readonly IEventTypeNamingStrategy _eventNamingStrategy;
     public DbContextEventStore(
         TDbContext dbContext,
         IEventSerializer eventSerializer,
-        IAggregateTypeNamingStrategy aggregateNamingStrategy)
+        IAggregateTypeNamingStrategy aggregateNamingStrategy,
+        IEventTypeNamingStrategy eventNamingStrategy)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
         _aggregateNamingStrategy = aggregateNamingStrategy ?? throw new ArgumentNullException(nameof(aggregateNamingStrategy));
+        _eventNamingStrategy = eventNamingStrategy ?? throw new ArgumentNullException(nameof(eventNamingStrategy));
     }
 
     
@@ -67,17 +70,17 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
 
     internal AggregateEvent<TAggregateId> ToAggregateEvent(EventData<TAggregateId> source)
     {
-        var eventType = _typeCache.GetOrAdd(source.EventName, typeName => Type.GetType(typeName, throwOnError: true)!);
+        var eventType = _eventTypeCache.GetOrAdd(source.EventType, _eventNamingStrategy.FromUniqueName);
 
         var @event = _eventSerializer.Deserialize(source.Payload, eventType) as IEventPayload;
 
-        var aggregateType = _aggregateNamingStrategy.FromUniqueName(source.AggregateType);
+        var aggregateType = _aggregateTypeCache.GetOrAdd(source.AggregateType, _aggregateNamingStrategy.FromUniqueName);
 
         var aggregateEvent = new AggregateEvent<TAggregateId>(
             @event!,
             aggregateType,
             source.AggregateId,
-            source.EventName,
+            eventType,
             source.EventId,
             source.EventIndex,
             source.DateTime.ToLocalTime());
@@ -98,7 +101,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         var eventData = new EventData<TAggregateId>(
             _aggregateNamingStrategy.ToUniqueName(source.AggregateType),
             source.AggregateId,
-            source.EventName,
+            _eventNamingStrategy.ToUniqueName(source.EventType),
             source.EventId,
             source.EventIndex,
             source.DateTime.ToUniversalTime(),

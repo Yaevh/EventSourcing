@@ -44,7 +44,7 @@ namespace Yaevh.EventSourcing.EFCore.SqlServer.Tests.Migrations
                     b.Property<long>("EventIndex")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("EventName")
+                    b.Property<string>("EventType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

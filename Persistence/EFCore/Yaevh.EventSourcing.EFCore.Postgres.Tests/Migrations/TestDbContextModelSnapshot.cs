@@ -43,7 +43,7 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                     b.Property<long>("EventIndex")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("EventName")
+                    b.Property<string>("EventType")
                         .IsRequired()
                         .HasColumnType("text");
 

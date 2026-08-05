@@ -20,7 +20,8 @@ public class EventStoreTests
             connectionFactory,
             eventSerializer,
             new GuidAggregateIdSerializer(),
-            new DefaultAggregateTypeNamingStrategy());
+            new DefaultAggregateTypeNamingStrategy(),
+            new DefaultEventTypeNamingStrategy());
 
         // Act & Assert - should not throw
         var events = await eventStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
@@ -49,7 +50,8 @@ public class EventStoreTests
             connectionFactory,
             eventSerializer,
             new GuidAggregateIdSerializer(),
-            new DefaultAggregateTypeNamingStrategy());
+            new DefaultAggregateTypeNamingStrategy(),
+            new DefaultEventTypeNamingStrategy());
 
         // Act
         await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
@@ -57,7 +59,7 @@ public class EventStoreTests
         // Assert by querying the DB manually
         const string sql = @"
                 SELECT
-                    AggregateType, AggregateId, EventName, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
+                    AggregateType, AggregateId, EventType, EventId, EventIndex, DateTime, Payload, MetadataType, Metadata
                 FROM Events
                 WHERE
                     AggregateId = @AggregateId
@@ -72,7 +74,7 @@ public class EventStoreTests
                 jeden.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("jeden")));
                 DateTimeOffset.Parse(jeden.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now1);
                 jeden.EventId.Should().Be(1);
-                jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                jeden.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 jeden.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                 jeden.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 jeden.EventIndex.Should().Be(1);
@@ -81,7 +83,7 @@ public class EventStoreTests
                 dwa.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("dwa")));
                 DateTimeOffset.Parse(dwa.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now2);
                 dwa.EventId.Should().Be(2);
-                dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                dwa.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 dwa.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                 dwa.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 dwa.EventIndex.Should().Be(2);
@@ -90,7 +92,7 @@ public class EventStoreTests
                 trzy.Payload.Should().Be(eventSerializer.Serialize(new BasicAggregate.BasicEvent("trzy")));
                 DateTimeOffset.Parse(trzy.DateTime, System.Globalization.CultureInfo.InvariantCulture).Should().Be(now3);
                 trzy.EventId.Should().Be(3);
-                trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                trzy.EventType.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
                 trzy.AggregateId.Should().Be(aggregateIdSerializer.Serialize(aggregate.AggregateId));
                 trzy.AggregateType.Should().Be(typeof(BasicAggregate).AssemblyQualifiedName);
                 trzy.EventIndex.Should().Be(3);
@@ -117,7 +119,8 @@ public class EventStoreTests
             connectionFactory,
             eventSerializer,
             new GuidAggregateIdSerializer(),
-            new DefaultAggregateTypeNamingStrategy());
+            new DefaultAggregateTypeNamingStrategy(),
+            new DefaultEventTypeNamingStrategy());
 
         await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
 
@@ -131,7 +134,7 @@ public class EventStoreTests
                     .Which.Value.Should().Be("jeden");
                 jeden.DateTime.Should().Be(now1);
                 jeden.EventId.Should().Be(1);
-                jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                jeden.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                 jeden.AggregateId.Should().Be(aggregate.AggregateId);
                 jeden.AggregateType.Should().Be(typeof(BasicAggregate));
                 jeden.EventIndex.Should().Be(1);
@@ -141,7 +144,7 @@ public class EventStoreTests
                     .Which.Value.Should().Be("dwa");
                 dwa.DateTime.Should().Be(now2);
                 dwa.EventId.Should().Be(2);
-                dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                dwa.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                 dwa.AggregateId.Should().Be(aggregate.AggregateId);
                 dwa.AggregateType.Should().Be(typeof(BasicAggregate));
                 dwa.EventIndex.Should().Be(2);
@@ -179,7 +182,8 @@ public class EventStoreTests
             connectionFactory,
             eventSerializer,
             new GuidAggregateIdSerializer(),
-            new DefaultAggregateTypeNamingStrategy());
+            new DefaultAggregateTypeNamingStrategy(),
+            new DefaultEventTypeNamingStrategy());
 
         // Act
         await eventStore.Awaiting(eventStore => eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None))

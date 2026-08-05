@@ -20,7 +20,7 @@ namespace Yaevh.EventSourcing.EFCore.Postgres.Tests.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AggregateType = table.Column<string>(type: "text", nullable: false),
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventName = table.Column<string>(type: "text", nullable: false),
+                    EventType = table.Column<string>(type: "text", nullable: false),
                     EventIndex = table.Column<long>(type: "bigint", nullable: false),
                     DateTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Payload = table.Column<string>(type: "text", nullable: false),

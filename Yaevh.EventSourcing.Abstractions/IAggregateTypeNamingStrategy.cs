@@ -18,8 +18,8 @@ public class DefaultAggregateTypeNamingStrategy : IAggregateTypeNamingStrategy
     public Type FromUniqueName(string aggregateTypeName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(aggregateTypeName);
-        var type = Type.GetType(aggregateTypeName);
-        return Type.GetType(aggregateTypeName)
+        // TODO add type cache to avoid repeated calls to Type.GetType()
+        return Type.GetType(aggregateTypeName, throwOnError: true)
             ?? throw new TypeLoadException($"Type '{aggregateTypeName}' could not be found.");
     }
 }

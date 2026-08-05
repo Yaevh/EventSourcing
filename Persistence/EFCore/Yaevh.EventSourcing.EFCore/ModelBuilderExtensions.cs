@@ -16,7 +16,7 @@ namespace Yaevh.EventSourcing.EFCore
                 b.Property(b => b.EventId).ValueGeneratedOnAdd();
 
                 b.Property(b => b.DateTime);
-                b.Property(b => b.EventName);
+                b.Property(b => b.EventType);
                 b.Property(b => b.AggregateId);
                 b.Property(b => b.AggregateType);
                 b.Property(b => b.EventIndex);

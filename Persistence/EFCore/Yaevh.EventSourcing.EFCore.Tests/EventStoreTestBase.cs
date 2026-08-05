@@ -1,9 +1,8 @@
-﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Yaevh.EventSourcing.Persistence;
+using FluentAssertions;
 
 namespace Yaevh.EventSourcing.EFCore.Tests;
-
 public abstract class EventStoreTestBase : IAsyncLifetime
 {
     public IDatabaseFixture DatabaseFixture { get; }
@@ -23,7 +22,6 @@ public abstract class EventStoreTestBase : IAsyncLifetime
 
     protected abstract Task<TestDbContext> BuildDbContext(CancellationToken cancellationToken);
 
-
     [Fact(DisplayName = "00. Basic aggregate sanity check")]
     public void AggregateSanityCheck()
     {
@@ -37,7 +35,6 @@ public abstract class EventStoreTestBase : IAsyncLifetime
         var token = CancellationToken.None;
         var (dbContext, eventStore) = await BuildDbContextAndEventStore(DatabaseFixture);
 
-
         // Act
         var aggregateId = Guid.NewGuid();
         var aggregate = new CalculationAggregate(aggregateId);
@@ -49,7 +46,6 @@ public abstract class EventStoreTestBase : IAsyncLifetime
         await eventStore.StoreAsync(aggregate.UncommittedEvents, token);
         await dbContext.SaveChangesAsync(token);
 
-
         // Assert
         var events = await dbContext.Events.OrderBy(x => x.EventIndex).ToListAsync();
 
@@ -57,19 +53,19 @@ public abstract class EventStoreTestBase : IAsyncLifetime
         events.Should().SatisfyRespectively(
             first => {
                 first.EventIndex.Should().Be(1);
-                first.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
+                first.EventType.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
             },
             second => {
                 second.EventIndex.Should().Be(2);
-                second.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
+                second.EventType.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
             },
             third => {
                 third.EventIndex.Should().Be(3);
-                third.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
+                third.EventType.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
             },
             fourth => {
                 fourth.EventIndex.Should().Be(4);
-                fourth.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
+                fourth.EventType.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
             });
     }
 
@@ -95,11 +91,9 @@ public abstract class EventStoreTestBase : IAsyncLifetime
 
         await dbContext.SaveChangesAsync(token);
 
-
         // Act
         var aggregateEvents = await eventStore.LoadAsync(aggregateId, token);
 
-        
         // Assert
         aggregateEvents.Should().NotBeNull();
         aggregateEvents.Should().SatisfyRespectively(
@@ -107,7 +101,7 @@ public abstract class EventStoreTestBase : IAsyncLifetime
                 add.Payload.Should().BeOfType<CalculationAggregate.AdditionEvent>()
                     .Which.Value.Should().Be(5);
                 add.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                add.EventName.Should().Be(typeof(CalculationAggregate.AdditionEvent).AssemblyQualifiedName);
+                add.EventType.Should().Be(typeof(CalculationAggregate.AdditionEvent));
                 add.AggregateId.Should().Be(aggregateId);
                 add.AggregateType.Should().Be(typeof(CalculationAggregate));
                 add.EventIndex.Should().Be(1);
@@ -116,7 +110,7 @@ public abstract class EventStoreTestBase : IAsyncLifetime
                 subtract.Payload.Should().BeOfType<CalculationAggregate.SubtractionEvent>()
                     .Which.Value.Should().Be(2);
                 subtract.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                subtract.EventName.Should().Be(typeof(CalculationAggregate.SubtractionEvent).AssemblyQualifiedName);
+                subtract.EventType.Should().Be(typeof(CalculationAggregate.SubtractionEvent));
                 subtract.AggregateId.Should().Be(aggregateId);
                 subtract.AggregateType.Should().Be(typeof(CalculationAggregate));
                 subtract.EventIndex.Should().Be(2);
@@ -125,7 +119,7 @@ public abstract class EventStoreTestBase : IAsyncLifetime
                 multiply.Payload.Should().BeOfType<CalculationAggregate.MultiplicationEvent>()
                     .Which.Value.Should().Be(4);
                 multiply.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                multiply.EventName.Should().Be(typeof(CalculationAggregate.MultiplicationEvent).AssemblyQualifiedName);
+                multiply.EventType.Should().Be(typeof(CalculationAggregate.MultiplicationEvent));
                 multiply.AggregateId.Should().Be(aggregateId);
                 multiply.AggregateType.Should().Be(typeof(CalculationAggregate));
                 multiply.EventIndex.Should().Be(3);
@@ -134,13 +128,12 @@ public abstract class EventStoreTestBase : IAsyncLifetime
                 divide.Payload.Should().BeOfType<CalculationAggregate.DivisionEvent>()
                     .Which.Value.Should().Be(3);
                 divide.DateTime.Should().BeCloseTo(now, TimeSpan.FromMinutes(1));
-                divide.EventName.Should().Be(typeof(CalculationAggregate.DivisionEvent).AssemblyQualifiedName);
+                divide.EventType.Should().Be(typeof(CalculationAggregate.DivisionEvent));
                 divide.AggregateId.Should().Be(aggregateId);
                 divide.AggregateType.Should().Be(typeof(CalculationAggregate));
                 divide.EventIndex.Should().Be(4);
             });
     }
-
 
     private static CalculationAggregate BuildAndCheckBasicAggregate()
     {
@@ -170,6 +163,11 @@ public abstract class EventStoreTestBase : IAsyncLifetime
         var dbContext = await BuildDbContext(cancellationToken);
         var eventSerializer = new SystemTextJsonEventSerializer();
 
-        return (dbContext, new DbContextEventStore<TestDbContext, Guid>(dbContext, eventSerializer, new DefaultAggregateTypeNamingStrategy()));
+        return (
+            dbContext,
+            new DbContextEventStore<TestDbContext, Guid>(
+                dbContext, eventSerializer,
+                new DefaultAggregateTypeNamingStrategy(),
+                new DefaultEventTypeNamingStrategy()));
     }
 }

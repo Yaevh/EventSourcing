@@ -110,7 +110,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                             .Which.Value.Should().Be("jeden");
                         jeden.DateTime.Should().Be(now1);
                         jeden.EventId.Should().Be(default);
-                        jeden.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        jeden.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                         jeden.AggregateId.Should().Be(aggregate.AggregateId);
                         jeden.AggregateType.Should().Be(typeof(BasicAggregate));
                         jeden.EventIndex.Should().Be(1);
@@ -120,7 +120,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                             .Which.Value.Should().Be("dwa");
                         dwa.DateTime.Should().Be(now2);
                         dwa.EventId.Should().Be(default);
-                        dwa.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        dwa.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                         dwa.AggregateId.Should().Be(aggregate.AggregateId);
                         dwa.AggregateType.Should().Be(typeof(BasicAggregate));
                         dwa.EventIndex.Should().Be(2);
@@ -130,7 +130,7 @@ namespace Yaevh.EventSourcing.Core.Tests
                             .Which.Value.Should().Be("trzy");
                         trzy.DateTime.Should().Be(now3);
                         trzy.EventId.Should().Be(default);
-                        trzy.EventName.Should().Be(typeof(BasicAggregate.BasicEvent).AssemblyQualifiedName);
+                        trzy.EventType.Should().Be(typeof(BasicAggregate.BasicEvent));
                         trzy.AggregateId.Should().Be(aggregate.AggregateId);
                         trzy.AggregateType.Should().Be(typeof(BasicAggregate));
                         trzy.EventIndex.Should().Be(3);

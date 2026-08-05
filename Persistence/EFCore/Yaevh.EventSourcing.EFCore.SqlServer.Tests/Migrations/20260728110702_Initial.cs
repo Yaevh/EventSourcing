@@ -19,7 +19,7 @@ namespace Yaevh.EventSourcing.EFCore.SqlServer.Tests.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AggregateType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AggregateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventIndex = table.Column<long>(type: "bigint", nullable: false),
                     DateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Payload = table.Column<string>(type: "nvarchar(max)", nullable: false),
