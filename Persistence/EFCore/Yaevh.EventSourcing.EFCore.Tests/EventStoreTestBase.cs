@@ -168,6 +168,7 @@ public abstract class EventStoreTestBase : IAsyncLifetime
             new DbContextEventStore<TestDbContext, Guid>(
                 dbContext, eventSerializer,
                 new DefaultAggregateTypeNamingStrategy(),
-                new DefaultEventTypeNamingStrategy()));
+                new DefaultEventTypeNamingStrategy(),
+                new DefaultMetadataTypeNamingStrategy()));
     }
 }

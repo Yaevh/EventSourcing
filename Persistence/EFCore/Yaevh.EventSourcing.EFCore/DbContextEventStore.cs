@@ -21,16 +21,19 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
     private readonly IEventSerializer _eventSerializer;
     private readonly IAggregateTypeNamingStrategy _aggregateNamingStrategy;
     private readonly IEventTypeNamingStrategy _eventNamingStrategy;
+    private readonly IMetadataTypeNamingStrategy _metadataNamingStrategy;
     public DbContextEventStore(
         TDbContext dbContext,
         IEventSerializer eventSerializer,
         IAggregateTypeNamingStrategy aggregateNamingStrategy,
-        IEventTypeNamingStrategy eventNamingStrategy)
+        IEventTypeNamingStrategy eventNamingStrategy,
+        IMetadataTypeNamingStrategy metadataNamingStrategy)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
         _aggregateNamingStrategy = aggregateNamingStrategy ?? throw new ArgumentNullException(nameof(aggregateNamingStrategy));
         _eventNamingStrategy = eventNamingStrategy ?? throw new ArgumentNullException(nameof(eventNamingStrategy));
+        _metadataNamingStrategy = metadataNamingStrategy ?? throw new ArgumentNullException(nameof(metadataNamingStrategy));
     }
 
 
@@ -86,10 +89,10 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
         if (source.MetadataType == null)
             return aggregateEvent;
 
-        var metadataType = _metadataTypeCache.GetOrAdd(source.MetadataType, typeName => Type.GetType(typeName, throwOnError: true)!);
+        var metadataType = _metadataTypeCache.GetOrAdd(source.MetadataType, _metadataNamingStrategy.FromUniqueName);
         var metadata = _eventSerializer.Deserialize(source.Metadata!, metadataType);
 
-        return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, source.MetadataType, metadata!);
+        return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, _metadataNamingStrategy.FromUniqueName(source.MetadataType), metadata!);
     }
 
     internal EventData<TAggregateId> ToEventData(AggregateEvent<TAggregateId> source)
@@ -107,7 +110,7 @@ public class DbContextEventStore<TDbContext, TAggregateId> : IEventStore<TAggreg
             null, null);
         if (source is AggregateEventWithMetadata<TAggregateId> withMetadata)
             eventData = eventData with {
-                MetadataType = withMetadata.MetadataType,
+                MetadataType = _metadataNamingStrategy.ToUniqueName(withMetadata.MetadataType),
                 Metadata = _eventSerializer.Serialize(withMetadata.Metadata)
             };
 

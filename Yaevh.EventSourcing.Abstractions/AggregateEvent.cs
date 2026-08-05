@@ -39,6 +39,19 @@ public record AggregateEvent<TAggregateId>(
     }
 }
 
+/// <summary>
+/// An event raised by an <see cref="IAggregate{TAggregateId}"/>, including some custom metadata.
+/// </summary>
+/// <typeparam name="TAggregateId">The type of the aggregate identifier.</typeparam>
+/// <param name="Payload">The domain-specific data for the event.</param>
+/// <param name="AggregateType">The CLR type of the aggregate this event belongs to.</param>
+/// <param name="AggregateId">Uniquely identifies the aggregate the event belongs to.</param>
+/// <param name="EventType">The CLR type of the raised event.</param>
+/// <param name="EventId">Uniquely identifies the event this metadata belongs to.</param>
+/// <param name="EventIndex">The one-based index of the event with regard to the aggregate.</param>
+/// <param name="DateTime">The date and time the event was raised.</param>
+/// <param name="MetadataType">The CLR type of the custom metadata.</param>
+/// <param name="Metadata">Thecustom metadata associated with the event.</param>
 public record AggregateEventWithMetadata<TAggregateId>(
     IEventPayload Payload,
     Type AggregateType,
@@ -47,7 +60,7 @@ public record AggregateEventWithMetadata<TAggregateId>(
     long EventId,
     long EventIndex,
     DateTimeOffset DateTime,
-    string MetadataType,
+    Type MetadataType,
     object Metadata
 ) : AggregateEvent<TAggregateId>(Payload, AggregateType, AggregateId, EventType, EventId, EventIndex, DateTime)
     where TAggregateId : notnull
@@ -61,14 +74,14 @@ public record AggregateEventWithMetadata<TAggregateId>(
             default,
             aggregate.Version + 1,
             dateTime,
-            metadata.GetType().AssemblyQualifiedName!,
+            metadata.GetType(),
             metadata)
     {
         ArgumentNullException.ThrowIfNull(aggregate);
         if (dateTime == default) throw new ArgumentException("Value cannot be the default DateTimeOffset.", nameof(dateTime));
     }
 
-    public AggregateEventWithMetadata(AggregateEvent<TAggregateId> @event, string metadataType, object metadata)
+    public AggregateEventWithMetadata(AggregateEvent<TAggregateId> @event, Type metadataType, object metadata)
         : this(
             @event.Payload,
             @event.AggregateType,

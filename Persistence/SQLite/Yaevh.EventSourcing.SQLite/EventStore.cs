@@ -173,7 +173,7 @@ namespace Yaevh.EventSourcing.SQLite
             var metadataType = _metadataTypeCache.GetOrAdd(source.MetadataType, typeName => Type.GetType(typeName, throwOnError: true)!);
             var metadata = _eventSerializer.Deserialize(source.Metadata, metadataType);
 
-            return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, source.MetadataType!, metadata!);
+            return new AggregateEventWithMetadata<TAggregateId>(aggregateEvent, metadataType, metadata!);
         }
 
 
