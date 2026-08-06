@@ -1,27 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <ItemGroup>
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\Yaevh.EventSourcing.Core\Yaevh.EventSourcing.Core.csproj" />
     <ProjectReference Include="..\..\Yaevh.EventSourcing.Persistence\Yaevh.EventSourcing.Persistence.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.Tests" />
     <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.SqlServer.Tests" />
     <InternalsVisibleTo Include="Yaevh.EventSourcing.EFCore.Postgres.Tests" />
   </ItemGroup>
-
 </Project>
