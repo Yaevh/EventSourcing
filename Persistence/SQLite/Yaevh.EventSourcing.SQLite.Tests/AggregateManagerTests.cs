@@ -30,7 +30,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                 eventSerializer,
                 new GuidAggregateIdSerializer(),
                 new DefaultAggregateTypeNamingStrategy(),
-                new DefaultEventTypeNamingStrategy());
+                new DefaultEventTypeNamingStrategy(BasicAggregate.EventTypes));
             var aggregateManager = new AggregateManager<BasicAggregate, Guid>(
                 eventStore,
                 new DefaultAggregateFactory(),

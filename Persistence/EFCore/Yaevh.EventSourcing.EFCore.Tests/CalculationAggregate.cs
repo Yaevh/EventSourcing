@@ -36,4 +36,12 @@ public class CalculationAggregate : Aggregate<CalculationAggregate>
     public record MultiplicationEvent(decimal Value) : IEventPayload;
     public record DivisionEvent(decimal Value) : IEventPayload;
     #endregion
+
+    public static readonly IEnumerable<Type> EventTypes =
+    [
+        typeof(AdditionEvent),
+        typeof(SubtractionEvent),
+        typeof(MultiplicationEvent),
+        typeof(DivisionEvent)
+    ];
 }

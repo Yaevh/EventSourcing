@@ -27,7 +27,7 @@
             }
         }
 
-
+        [EventName("Basic event")]
         internal record BasicEvent(string Value) : IEventPayload;
     }
 }

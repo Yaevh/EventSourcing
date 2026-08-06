@@ -3,64 +3,64 @@ using System.Reflection;
 
 namespace Yaevh.EventSourcing.Core;
 
-// TODO add tests
 public class DefaultEventTypeNamingStrategy : IEventTypeNamingStrategy
 {
     private static readonly Type EventNameAttributeType = typeof(EventNameAttribute);
+    private static readonly Type IEventPayloadType = typeof(IEventPayload);
 
-    private static readonly ConcurrentDictionary<Type, string> _typeToNameCache = new();
-    private static readonly ConcurrentDictionary<string, Type> _nameToTypeCache = new(StringComparer.Ordinal);
+    private readonly Dictionary<Type, string> _typeToNameCache = new();
+    private readonly Dictionary<string, Type> _nameToTypeCache = new(StringComparer.Ordinal);
+    
 
-    static DefaultEventTypeNamingStrategy()
+    public DefaultEventTypeNamingStrategy(IEnumerable<Type> knownEventTypes)
     {
-        BuildEventNameAttributesCache();
+        BuildEventNameAttributesCache(knownEventTypes);
     }
-
 
     public string ToUniqueName(Type eventType)
     {
-        return _typeToNameCache.GetOrAdd(eventType, ToUniqueNameImpl);
-    }
-
-    private string ToUniqueNameImpl(Type eventType)
-    {
-        return eventType.GetCustomAttributes<EventNameAttribute>(inherit: false)
-            .SingleOrDefault()?.Value
-            ??
-            eventType.AssemblyQualifiedName!;
+        if (_typeToNameCache.TryGetValue(eventType, out var name))
+            return name;
+        else
+            throw UnknownEventTypeException.ForType(eventType);
     }
 
     public Type FromUniqueName(string eventTypeName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(eventTypeName);
-        return _nameToTypeCache.GetOrAdd(eventTypeName, FromUniqueNameImpl);
+        if (_nameToTypeCache.TryGetValue(eventTypeName, out var type))
+            return type;
+        else
+            throw UnknownEventNameException.ForTypeName(eventTypeName);
     }
 
-    private Type FromUniqueNameImpl(string eventTypeName)
+    private void BuildEventNameAttributesCache(IEnumerable<Type> eventTypes)
     {
-        // the cache is pre-populated with all types that have the EventNameAttribute,
-        // so if the name is found in the cache, we have to return the type directly
-        return Type.GetType(eventTypeName, throwOnError: true)!;
-    }
+        if (eventTypes.Any(t => t.IsAssignableTo(IEventPayloadType) == false))
+            throw NotAnEventTypeException.ForType(eventTypes.Where(t => t.IsAssignableTo(IEventPayloadType) == false));
 
-    private static void BuildEventNameAttributesCache()
-    {
-        var eventNameAttributes = AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(a => a.GetTypes())
+        var eventNameAttributes = eventTypes
             .Select(t => new {
                 Type = t,
                 Attribute = t.CustomAttributes
-                    .Where(x => x.AttributeType == EventNameAttributeType)
-                    .SingleOrDefault()
+                    .SingleOrDefault(x => x.AttributeType == EventNameAttributeType)
             })
-            .Where(x => x.Attribute != null)
             .Select(x => new {
                 Type = x.Type,
-                EventName = x.Attribute!.ConstructorArguments[0].Value as string
+                EventName = x.Attribute?.ConstructorArguments[0].Value as string ?? x.Type.AssemblyQualifiedName
             });
 
         foreach (var item in eventNameAttributes)
-            _nameToTypeCache.TryAdd(item.EventName!, item.Type);
+        {
+            AddToCache(item.Type, item.EventName!);
+        }
+    }
+
+    private void AddToCache(Type eventType, string eventName)
+    {
+        if (_typeToNameCache.TryAdd(eventType, eventName) == false)
+            throw EventTypeAmbiguousException.ForType(eventType);
+        if (_nameToTypeCache.TryAdd(eventName, eventType) == false)
+            throw EventNameAmbiguousException.ForTypeName(eventName);
     }
 }

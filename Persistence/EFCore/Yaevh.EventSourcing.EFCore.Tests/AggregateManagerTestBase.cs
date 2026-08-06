@@ -42,7 +42,7 @@ public abstract class AggregateManagerTestBase : IAsyncLifetime
         var eventStore = new DbContextEventStore<TestDbContext, Guid>(
             dbContext, eventSerializer,
             new DefaultAggregateTypeNamingStrategy(),
-            new DefaultEventTypeNamingStrategy(),
+            new DefaultEventTypeNamingStrategy(CalculationAggregate.EventTypes),
             new DefaultMetadataTypeNamingStrategy());
 
         var aggregateId = Guid.NewGuid();

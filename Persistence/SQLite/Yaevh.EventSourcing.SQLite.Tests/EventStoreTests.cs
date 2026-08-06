@@ -2,6 +2,7 @@ using Dapper;
 using FluentAssertions;
 using System.Data;
 using System.Data.Common;
+using Yaevh.EventSourcing.Core;
 using Yaevh.EventSourcing.Persistence;
 
 namespace Yaevh.EventSourcing.SQLite.Tests;
@@ -21,7 +22,7 @@ public class EventStoreTests
             eventSerializer,
             new GuidAggregateIdSerializer(),
             new DefaultAggregateTypeNamingStrategy(),
-            new DefaultEventTypeNamingStrategy());
+            new DefaultEventTypeNamingStrategy([]));
 
         // Act & Assert - should not throw
         var events = await eventStore.LoadAsync(Guid.NewGuid(), CancellationToken.None);
@@ -51,7 +52,7 @@ public class EventStoreTests
             eventSerializer,
             new GuidAggregateIdSerializer(),
             new DefaultAggregateTypeNamingStrategy(),
-            new DefaultEventTypeNamingStrategy());
+            new DefaultEventTypeNamingStrategy(BasicAggregate.EventTypes));
 
         // Act
         await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
@@ -120,7 +121,7 @@ public class EventStoreTests
             eventSerializer,
             new GuidAggregateIdSerializer(),
             new DefaultAggregateTypeNamingStrategy(),
-            new DefaultEventTypeNamingStrategy());
+            new DefaultEventTypeNamingStrategy(BasicAggregate.EventTypes));
 
         await eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None);
 
@@ -183,7 +184,7 @@ public class EventStoreTests
             eventSerializer,
             new GuidAggregateIdSerializer(),
             new DefaultAggregateTypeNamingStrategy(),
-            new DefaultEventTypeNamingStrategy());
+            new DefaultEventTypeNamingStrategy(BasicAggregate.EventTypes));
 
         // Act
         await eventStore.Awaiting(eventStore => eventStore.StoreAsync(aggregate.UncommittedEvents, CancellationToken.None))

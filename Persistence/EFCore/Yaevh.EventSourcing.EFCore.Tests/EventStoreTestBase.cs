@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yaevh.EventSourcing.Persistence;
 using FluentAssertions;
+using Yaevh.EventSourcing.Core;
 
 namespace Yaevh.EventSourcing.EFCore.Tests;
 public abstract class EventStoreTestBase : IAsyncLifetime
@@ -168,7 +169,7 @@ public abstract class EventStoreTestBase : IAsyncLifetime
             new DbContextEventStore<TestDbContext, Guid>(
                 dbContext, eventSerializer,
                 new DefaultAggregateTypeNamingStrategy(),
-                new DefaultEventTypeNamingStrategy(),
+                new DefaultEventTypeNamingStrategy(CalculationAggregate.EventTypes),
                 new DefaultMetadataTypeNamingStrategy()));
     }
 }

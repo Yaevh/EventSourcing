@@ -36,5 +36,8 @@ namespace Yaevh.EventSourcing.SQLite.Tests
 
 
         public record BasicEvent(string Value) : IEventPayload;
+
+
+        public static readonly IEnumerable<Type> EventTypes = [typeof(BasicEvent)];
     }
 }
