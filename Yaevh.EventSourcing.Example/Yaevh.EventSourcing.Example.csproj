@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Persistence\SQLite\Yaevh.EventSourcing.SQLite\Yaevh.EventSourcing.SQLite.csproj" />
