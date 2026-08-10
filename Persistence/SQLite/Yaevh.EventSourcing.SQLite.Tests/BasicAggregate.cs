@@ -30,7 +30,7 @@ namespace Yaevh.EventSourcing.SQLite.Tests
                     CurrentValue = @event.Value;
                     break;
                 default:
-                    throw new UnknownEventException(aggregateEvent.GetType());
+                    throw new UnsupportedEventException(aggregateEvent.GetType());
             }
         }
 

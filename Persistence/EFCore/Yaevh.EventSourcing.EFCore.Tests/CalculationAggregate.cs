@@ -26,7 +26,7 @@ public class CalculationAggregate : Aggregate<CalculationAggregate>
             SubtractionEvent sub => Value - sub.Value,
             MultiplicationEvent mul => Value * mul.Value,
             DivisionEvent div => Value / div.Value,
-            _ => throw new UnknownEventException(aggregateEvent.GetType())
+            _ => throw new UnsupportedEventException(aggregateEvent.GetType())
         };
     }
 
