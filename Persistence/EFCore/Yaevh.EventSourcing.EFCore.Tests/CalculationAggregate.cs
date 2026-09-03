@@ -26,7 +26,7 @@ public class CalculationAggregate : Aggregate<CalculationAggregate>
             SubtractionEvent sub => Value - sub.Value,
             MultiplicationEvent mul => Value * mul.Value,
             DivisionEvent div => Value / div.Value,
-            _ => throw new UnknownEventException(aggregateEvent.GetType())
+            _ => throw new UnsupportedEventException(aggregateEvent.GetType())
         };
     }
 
@@ -36,4 +36,12 @@ public class CalculationAggregate : Aggregate<CalculationAggregate>
     public record MultiplicationEvent(decimal Value) : IEventPayload;
     public record DivisionEvent(decimal Value) : IEventPayload;
     #endregion
+
+    public static readonly IEnumerable<Type> EventTypes =
+    [
+        typeof(AdditionEvent),
+        typeof(SubtractionEvent),
+        typeof(MultiplicationEvent),
+        typeof(DivisionEvent)
+    ];
 }
