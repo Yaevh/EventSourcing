@@ -1,6 +1,8 @@
 # Yaevh.EventSourcing
 Just another library for event sourcing in .NET.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Yaevh/EventSourcing)
+
 There are some Event Sourcing (ES) libraries on GitHub, but most of them fall into either of the two categories:
 1. they're not libraries, but rather frameworks, and frameworks limit your flexibility - they force you to adapt a certain architecture and shape your project accordingly
 2. if they're libraries, they tend to force you to adapt certain base classes for your domain objects; and I want to use POCOs as much as possible
